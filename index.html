@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <title>PlataformA – Cobros simples en cripto</title>
+  <meta name="description" content="Cobrale a tus clientes en cripto de forma simple, segura y sin vueltas. PlataformA es tu solución lista para usar.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" href="favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #fff;
+      margin: 0;
+      color: #181d24;
+      /* padding-bottom: 5rem; */
+    }
+    .main-wrap {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 1.5rem;
+    }
+
+
+    .logo {
+     font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+      font-size: 2.8rem;
+      font-weight: 600;
+      color: #23272f;
+      margin-bottom: 2.8rem;   /* ← УВЕЛИЧИЛ! */
+      margin-top: 1.5rem;
+      letter-spacing: 0.06em;
+      opacity: 1;
+      animation: fadeInLogo 1.2s ease 0.1s both;
+      user-select: none;
+      text-shadow: 0 0 8px rgba(0,0,0,0.1), 0 0 1px #ccc;
+    }
+
+    .logo .A {
+      color: #a4aab3;
+      text-decoration: underline;
+      text-underline-offset: 0.13em;
+      margin-left: 2px;
+      font-weight: 700;
+    }
+    @keyframes fadeInLogo {
+      0% { opacity: 0; transform: translateY(-16px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+
+    .hero-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 5.7rem;
+      margin-top: 0.2rem;
+      letter-spacing: 0.01em;
+    }
+    .hero-sub {
+      font-size: 1.17rem;
+      color: #444;
+      font-weight: 700;
+      margin-bottom: 3.3rem;
+      text-align: center;
+      letter-spacing: 0.01em;
+      line-height: 1.4;
+      margin-top: 5.2rem;
+    }
+
+    #typed-text {
+      margin-top: 1.1rem;
+      font-size: 1.11rem;
+      color: #5c6371;
+      font-weight: 600;
+      text-align: center;
+      min-height: 2rem;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-main {
+      display: inline-block;
+      background: #fff;
+      color: #23272f;
+      font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+      font-weight: 400;
+      font-size: 1.08rem;
+      border: 1.7px solid #23272f;
+      padding: 0.85rem 2.5rem;
+      border-radius: 1.9rem;
+      box-shadow: 0 3px 20px 0 rgba(70,70,90,0.10);
+      margin: 1.5rem 0 1.1rem 0;
+      cursor: pointer;
+      transition: all 0.16s cubic-bezier(.64,.12,.4,.95);
+      outline: none;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-acento {
+      color: #3E5F56 !important;
+      font-weight: 500;
+    }
+
+
+    .btn-main:hover {
+      background: #f3f3f3;
+      color: #181d24;
+      border-width: 2.3px;
+      box-shadow: 0 7px 28px 0 rgba(25,35,60,0.14);
+      transform: scale(1.065);
+    }
+
+    .btn-main:hover, .btn-main:focus {
+      border-color: #4DCC8A;
+      box-shadow: 0 7px 28px 0 #4DCC8A33;
+      color: #181d24;
+    }
+    .btn-main:active {
+      background: #4DCC8A;
+      color: #fff;
+      border-color: #4DCC8A;
+      box-shadow: 0 7px 28px 0 #4DCC8A33;
+      transition: all 0.1s;
+    }
+
+
+    .coins {
+      display: flex;
+      gap: 4rem; /* было 3.2rem, теперь чуть больше */
+      justify-content: center;
+      margin-bottom: 2.8rem;
+      margin-top: 1.6rem;
+    }
+
+    .coin-icon {
+      width: 6.6rem;
+      height: 6.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+      background: transparent;
+    }
+    .coin-icon img {
+      width: 5rem;
+      height: 5rem;
+      display: block;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+    .coin-icon[title="BTC"] img {
+        filter: drop-shadow(0 0 3px #f2a90088) drop-shadow(0 0 7px #f2a90033);
+    }
+    .coin-icon[title="ETH"] img {
+        filter: drop-shadow(0 0 3px #627eea88) drop-shadow(0 0 7px #627eea33);
+    }
+    .coin-icon[title="USDT"] img {
+        filter: drop-shadow(0 0 3px #26a17b88) drop-shadow(0 0 7px #26a17b33);
+    }
+
+    .coin-icon:hover img {
+      transform: scale(1.13);
+      filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 35px #00ffccaa);
+      transition: all 0.23s;
+    }
+
+    .neon-block {
+      margin-top: 2.4rem;
+      font-size: 1.15rem;
+      font-weight: 400;
+      text-align: center;
+      color: #23272f;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 0 8px rgba(25,195,125,0.2);
+      cursor: pointer;
+      user-select: none;
+      line-height: 1.38;
+      letter-spacing: 0.01em;
+      transition: transform 0.2s ease, text-shadow 0.3s ease;
+    }
+
+    .neon-block:hover {
+      transform: scale(1.06);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.16), 0 0 10px rgba(25,195,125,0.3);
+    }
+
+    .neon-block .down-arrow {
+      font-size: 1.72rem;
+      margin-top: 0.2em;
+      animation: neon-down 1.4s infinite alternate;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 0 8px rgba(25,195,125,0.25);
+      transition: transform 0.2s ease;
+    }
+
+    .neon-block:hover .down-arrow {
+      transform: scale(1.15);
+    }
+
+    @keyframes neon-down {
+      0% { transform: translateY(0);}
+      100% { transform: translateY(9px);}
+    }
+
+    .wa-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 15px;
+      width: 128px;
+      height: 128px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .wa-btn img {
+        width: 98px;
+        height: 98px;
+        display: block;
+        object-fit: contain;
+        filter: drop-shadow(0 0 4px #25D36688) drop-shadow(0 0 9px #25D36633);
+        transition: transform 0.3s ease, filter 0.3s ease;
+    }
+    .wa-btn:hover img {
+        transform: scale(1.08);
+        filter: drop-shadow(0 0 7px #25D36688) drop-shadow(0 0 12px #25D36633);
+    }
+
+
+
+
+    @media (max-width: 600px) {
+        #avisoModal > div {
+            padding: 18px 20px !important;
+        }
+
+        #avisoModal ul li {
+            margin-bottom: 8px !important;
+        }
+    }
+
+    @media (max-width: 600px) {
+        #modalExito > div {
+            margin-top: 12px;
+            padding: 20px 20px !important;
+        }
+    }
+    @media (max-width: 600px) {
+        #modalWalletInfo > div {
+            max-height: 78vh;
+            padding: 18px 20px !important;
+        }
+    }
+
+        .glow-moderna {
+            box-shadow: 0 0 25px 8px rgba(147, 197, 253, 0.6);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .glow-elegante {
+            box-shadow: 0 0 25px 8px rgba(88, 81, 219, 0.5);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .glow-tecno {
+            box-shadow: 0 0 25px 8px rgba(56, 189, 248, 0.7);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .glow-blanca {
+            box-shadow: 0 0 25px 8px rgba(200, 200, 200, 0.5);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+    @keyframes fadein {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    @keyframes scalein {
+        0% { transform: scale(0.94) translateY(18px); opacity: 0; }
+        100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .animate-fadein {
+        animation: fadein 0.4s cubic-bezier(.7, .07, .3, .99);
+    }
+    .animate-scalein {
+        animation: scalein 0.38s cubic-bezier(.7, .07, .3, .99);
+    }
+
+    /* Efecto de aparición suave para el campo de dirección manual */
+    .fade-in {
+      animation: fadeIn 0.36s cubic-bezier(.71,.12,.4,.91);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to   { opacity: 1; transform: translateY(0);}
+    }
+
+    /* Animación para mostrar elementos suavemente (por ejemplo, campos o modales) */
+    .fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Efecto fade-in suave para modales */
+    .fade-in-modal {
+      animation: fadeInModal 0.36s cubic-bezier(.71,.12,.4,.91);
+    }
+    @keyframes fadeInModal {
+      from { opacity: 0; transform: translateY(22px);}
+      to   { opacity: 1; transform: translateY(0);}
+    }
+
+    .bg-black {
+      background: #181d24 !important;
+      color: #fff !important;
+      box-shadow: 0 3px 14px 0 rgba(30,32,40,0.13);
+      transition: 
+        background 0.18s cubic-bezier(.64,.12,.4,.95),
+        box-shadow 0.2s cubic-bezier(.64,.12,.4,.95),
+        transform 0.13s cubic-bezier(.64,.12,.4,.95);
+    }
+    .bg-black:hover, .bg-black:active, .bg-black:focus {
+      background: #343a40 !important;
+      color: #fff !important;
+      box-shadow: 0 7px 22px 0 rgba(20,22,35,0.19);
+      transform: scale(1.035);
+    }
+
+    #btnAceptar:enabled:hover {
+      background: #2e3037;
+      box-shadow: 0 2px 8px rgba(44, 44, 44, 0.14);
+      transform: translateY(-1px) scale(1.03);
+      transition: all 0.13s cubic-bezier(.7, .4, 1, .6);
+    }
+
+    #btnAceptar:enabled:active {
+      background: #191b22;
+      box-shadow: 0 1px 3px rgba(44, 44, 44, 0.10);
+      transform: translateY(0) scale(1);
+    }
+
+    .btn-secundario:hover {
+      background: #f3f3f3;
+      border-color: #bdbdbd;
+    }
+
+#modalExito button {
+  transition: background 0.18s cubic-bezier(.64,.12,.4,.95), 
+              box-shadow 0.16s cubic-bezier(.64,.12,.4,.95), 
+              transform 0.14s cubic-bezier(.64,.12,.4,.95);
+}
+#modalExito button:hover, 
+#modalExito button:focus {
+  background: #181d24 !important;
+  box-shadow: 0 5px 18px rgba(25,35,60,0.11);
+  transform: scale(1.05);
+}
+#modalExito button:active {
+  background: #23272f !important;
+  transform: scale(0.98);
+}
+
+    /* === Всегда для главного контейнера === */
+    .relative.min-h-screen {
+        min-height: 100vh;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    /* === Мобильная версия === */
+    @media (max-width: 700px) {
+        .logo {
+            font-size: 4.2rem;
+            margin-top: 1.1rem;
+            margin-bottom: 4.2rem;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 1.08rem;
+            margin-bottom: 1.18rem;
+            margin-top: 0.15rem;
+            line-height: 1.13;
+        }
+        .hero-sub {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            margin-top: 0.55rem;
+        }
+        .coins {
+            gap: 1.8rem;
+            margin-bottom: 0.8rem;
+            margin-top: 0.55rem;
+        }
+        .coin-icon {
+            width: 4.2rem;
+            height: 4.2rem;
+        }
+        .coin-icon img {
+            width: 3.2rem;
+            height: 3.2rem;
+        }
+        .wa-btn {
+            width: 70px;
+            height: 70px;
+        }
+        .wa-btn img {
+            width: 70px;
+            height: 70px;
+        }
+    }
+
+    /* === Десктоп/ноутбуки (примерно до 1200px) === */
+    @media (max-width: 700px) {
+        .logo {
+            font-size: 2.2rem;
+            margin-top: 1.1rem;
+            margin-bottom: 3.2rem;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 1.08rem;
+            margin-bottom: 1.18rem;
+            margin-top: 0.15rem;
+            line-height: 1.13;
+        }
+        .hero-sub {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            margin-top: 0.55rem;
+        }
+        .coins {
+            gap: 1.8rem;
+            margin-bottom: 0.8rem;
+            margin-top: 0.55rem;
+        }
+        .coin-icon {
+            width: 4.2rem;
+            height: 4.2rem;
+        }
+        .coin-icon img {
+            width: 3.2rem;
+            height: 3.2rem;
+        }
+    }
+
+    @media (min-width: 701px) {
+        .hero-title {
+            margin-bottom: 2.7rem;
+        }
+        .hero-sub {
+            margin-top: 0.8rem;
+        }
+    }
+
+
+    </style>
+</head>
+<body>
+    <!-- 🎯 HERO PRINCIPAL: título, subtítulo y CTA -->
+    <div id="landing">
+        <div class="relative min-h-screen flex flex-col items-center justify-center">
+            <div class="absolute inset-0 z-0"
+                 style="background: linear-gradient(180deg, rgba(77,204,138,0.60) 0%, rgba(255,255,255,0.98) 32%, #fff 50%);"></div>
+            
+            <div class="main-wrap relative z-10">
+                <div class="logo font-black text-3xl md:text-5xl tracking-wide flex justify-center items-center">
+                    Plataform<span class="text-[#3E5F56]">A</span>
+                </div>
+                <h1 class="hero-title text-3xl md:text-5xl font-semibold text-center leading-snug mb-4 mt-2">
+                    Soluciones simples para tu crecimiento
+                </h1>
+                <div class="hero-sub text-xl md:text-2xl font-semibold text-[#7F8FA4] text-center mt-2 mb-6">
+                    Cobrá en cripto<br>
+                    Fácil. Seguro. Sin vueltas.
+                </div>
+                <div id="typed-text" class="mb-2"></div>
+                <button
+                    class="btn-main btn-acento"
+                    onclick="iniciarGenerador()"
+                >
+                    Generá tu link de pago gratis
+                </button>
+                <!-- 💸 Íconos de monedas destacadas -->
+                <div class="coins">
+                    <div class="flex flex-col items-center">
+                        <div class="coin-icon" title="BTC"><img src="assets/BTC.png" alt="BTC"></div>
+                        <span class="mt-2 text-[#7F8FA4] text-base font-semibold">Bitcoin</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="coin-icon" title="ETH"><img src="assets/ETH.png" alt="ETH"></div>
+                        <span class="mt-2 text-[#7F8FA4] text-base font-semibold">Ethereum</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="coin-icon" title="USDT"><img src="assets/USDT.png" alt="USDT"></div>
+                        <span class="mt-2 text-[#7F8FA4] text-base font-semibold">USDT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 🧭 Link interno a la sección de beneficios -->
+    <!--
+    <div class="neon-block" onclick="document.getElementById('ventajas')?.scrollIntoView({behavior:'smooth'});">
+      ¿Esto es para vos? Mirá por qué
+      <div class="down-arrow">↓</div>
+    </div>
+    -->
+
+  <!-- 🛠 GENERADOR PASO A PASO -->
+  <!-- Esta sección oculta contendrá todos los pasos del generador -->
+
+  <!-- 🧩 Paso 1: El usuario completa los datos del negocio -->
+    <section id="paso1" style="display: none;" aria-hidden="true"
+        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-scalein">
+        <!-- 💬 Frase emocional -->
+        <div class="mb-4">
+            <p class="text-center text-xl font-semibold text-gray-800 leading-snug">
+                Estás a 1 minuto de tener<br>tu página para cobrar en cripto 💸
+            </p>
+        </div>
+
+        <!-- 🔢 Paso y título -->
+        <div class="mb-4 text-center">
+            <p class="text-sm text-gray-500 font-medium mb-1">Paso 1 de 3</p>
+            <h2 class="text-2xl font-bold text-gray-900">Personalizá tu página de cobro</h2>
+        </div>
+
+        <form id="formNegocio" class="space-y-5">
+            <!-- 🏷️ Nombre del negocio -->
+            <div>
+                <label for="nombreNegocio" class="block text-base text-gray-700 mb-1">🏷️ Nombre de tu negocio (o tu nombre) *</label>
+                <input
+                    type="text"
+                    id="nombreNegocio"
+                    name="nombreNegocio"
+                    required
+                    placeholder="Ej: Panadería La Plaza"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <!-- ✍️ ¿Qué ofrecés? (opcional) -->
+            <div>
+                <label for="descripcion" class="block text-base text-gray-700 mb-1">
+                    ✍️ ¿Qué ofrecés? (opcional)
+                </label>
+                <input
+                    type="text"
+                    id="descripcion"
+                    name="descripcion"
+                    placeholder="Ej: servicios, productos, asesorías…"
+                    class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+
+            <!-- 🔘 Botón principal -->
+            <div class="pt-3">
+                <button
+                    type="button"
+                    onclick="validarPaso1()"
+                    class="bg-black text-white px-6 py-3 rounded-lg font-medium w-full hover:bg-neutral-800 hover:shadow-md transition duration-200"
+                >
+                    Continuar
+                </button>
+            </div>
+
+            <!-- 🔒 Microtexto de confianza -->
+            <p class="text-xs text-gray-500 text-center mt-4 mb-2">
+                No guardamos tus datos, solo para tu link personalizado.
+            </p>
+
+        </form>
+
+        <!-- 🔗 Enlaces auxiliares -->
+        <div class="flex justify-between text-sm text-black mt-6">
+            <a href="#" onclick="volverAlInicio()" class="hover:underline">← Volver al paso anterior</a>
+            <a href="https://wa.me/5491127369492" target="_blank" class="hover:underline">¿Necesitás ayuda?</a>
+        </div>
+    </section>
+
+  <!-- 🧩 Paso 2: El usuario elija si quiere usar su propia wallet o genere una nueva automáticamente. -->
+    <section id="paso2" style="display: none;" aria-hidden="true"
+        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-scalein">
+        <!-- 💬 Frase emocional -->
+        <!-- 💬 Encabezado simplificado -->
+        <div class="mb-4 text-center">
+            <p class="text-sm text-gray-500 text-center mb-2">Paso 2 de 3</p>
+            <h2 class="text-xl font-semibold text-center mb-6">¿Cómo querés recibir tus pagos?</h2>
+            </p>
+            <p class="text-sm text-gray-600 mb-2">
+                Elegí una opción para seguir
+            </p>
+        </div>
+
+        <!-- 🔘 Elección -->
+        <div class="flex flex-col gap-4 mb-6">
+            <button type="button" onclick="elegirWallet('manual')"
+                id="btnManual"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-black focus:ring-2 focus:ring-black">
+                <strong>📲 Ya tengo billetera</strong>
+                <p class="text-sm text-gray-600">Ingresá la dirección que ya usás</p>
+            </button>
+            <button type="button" onclick="elegirWallet('generar')"
+                id="btnGenerar"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-black focus:ring-2 focus:ring-black">
+                <strong>⚙️ Crear una nueva automáticamente</strong>
+                <p class="text-sm text-gray-600">Generamos una dirección única para vos</p>
+            </button>
+            <p class="text-sm text-gray-500 text-center mt-1">
+                <a href="#" onclick="abrirModalWalletInfo()" class="text-blue-600 hover:underline">
+                    ¿Qué es una billetera?
+                </a>
+            </p>
+        </div>
+
+        <!-- 🧾 Campo manual -->
+        <div id="walletManual" style="display: none;" class="mb-5">
+            <label for="direccionManual" class="block text-base text-gray-700 mb-1">
+                Dirección de tu billetera
+            </label>
+            <input
+                type="text"
+                id="direccionManual"
+                placeholder="Ej: 0x5F...E91A"
+                class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                oninput="validarDireccionManual()"
+            />
+            <p id="errorWallet" class="text-red-600 text-sm mt-1 hidden">
+                Ingresá una dirección válida que empiece con “0x” y tenga 42 caracteres
+            </p>
+        </div>
+
+        <!-- 🔘 Continuar -->
+        <div class="pt-3">
+            <button
+                type="button"
+                id="continuarPaso2"
+                onclick="continuarConWallet()"
+                class="bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition w-full"
+                disabled
+            >
+                Continuar
+            </button>
+        </div>
+        <!-- 🔗 Enlaces auxiliares -->
+        <div class="flex justify-between text-sm text-black mt-6">
+            <a href="#" onclick="volverAPaso1()" class="hover:underline">← Volver al paso anterior</a>
+            <a href="https://wa.me/5491127369492" target="_blank" class="hover:underline">¿Necesitás ayuda?</a>
+        </div>
+    </section>
+
+    <!-- 🧩 Paso 3: Fondo visual de la página de cobro -->
+    <section id="paso3" style="display: none;" aria-hidden="true"
+        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-scalein">
+        
+        <!-- 🖼️ Título -->
+        <div class="mb-4 text-center">
+            <p class="text-sm text-gray-500 text-center mb-2">Paso 3 de 3</p>
+            <h2 class="text-xl font-semibold text-center mb-6">Elegí el fondo de tu página</h2>
+            </p>
+            <p class="text-sm text-gray-600">
+                Elegí cómo querés que se vea tu página. Podés cambiarlo después.
+            </p>
+        </div>
+
+        <!-- 🎨 Opciones visuales -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Fondo moderno -->
+            <button id="fondo-moderno"
+                    class="fondo-option border rounded-xl p-3 transition-transform transition-shadow duration-300 ease-in-out bg-gradient-to-b from-sky-100 to-white"
+                    onclick="seleccionarFondo('moderno')">
+                <div class="w-full h-52 rounded-xl shadow-inner flex flex-col items-center justify-center space-y-3">
+                    <div class="text-gray-800 font-semibold text-base">Tu nombre</div>
+                    <img src="assets/qr.png" class="w-20 h-20" alt="QR">
+                    <div class="bg-black text-white text-sm px-3 py-1 rounded-full">USDT</div>
+                </div>
+                <p class="text-center text-sm mt-2 text-gray-800">Fondo moderno</p>
+            </button>
+
+            <!-- Fondo elegante -->
+            <button id="fondo-elegante"
+                    class="fondo-option border rounded-xl p-3 transition-transform transition-shadow duration-300 ease-in-out bg-gradient-to-b from-[#1e1e2f] to-[#2a2d40]"
+                    onclick="seleccionarFondo('elegante')">
+                <div class="w-full h-52 rounded-xl shadow-inner flex flex-col items-center justify-center space-y-3">
+                    <div class="text-white font-semibold text-base">Tu nombre</div>
+                    <img src="assets/qr.png" class="w-20 h-20" alt="QR">
+                    <div class="bg-white text-black text-sm px-3 py-1 rounded-full">USDT</div>
+                </div>
+                <p class="text-center text-sm mt-2 text-white">Fondo elegante</p>
+            </button>
+
+            <!-- Fondo tecnológico -->
+            <button id="fondo-tecnologico"
+                    class="fondo-option border rounded-xl p-3 transition-transform transition-shadow duration-300 ease-in-out bg-gradient-to-br from-[#0f172a] via-[#334155] to-[#06b6d4]"
+                    onclick="seleccionarFondo('tecnologico')">
+                <div class="w-full h-52 rounded-xl shadow-inner flex flex-col items-center justify-center space-y-3">
+                    <div class="text-white font-semibold text-base">Tu nombre</div>
+                    <img src="assets/qr.png" class="w-20 h-20" alt="QR">
+                    <div class="bg-white text-black text-sm px-3 py-1 rounded-full">USDT</div>
+                </div>
+                <p class="text-center text-sm mt-2 text-white">Fondo tecnológico</p>
+            </button>
+        </div>
+
+        <!-- 🟦 Fondo blanco como opción clara -->
+        <div class="mt-6 text-sm text-center text-gray-700 flex flex-col items-center">
+            <p class="mb-2 flex items-center gap-2">
+                ¿Querés algo simple y clásico? Elegí fondo blanco
+                <button id="fondo-blanco"
+                        class="fondo-option border rounded-md p-[2px] transition-transform transition-shadow duration-300 ease-in-out"
+                        onclick="seleccionarFondo('blanco')">
+                    <div class="w-8 h-8 bg-white border rounded shadow-sm"></div>
+                </button>
+            </p>
+        </div>
+
+        <!-- 🔘 Botón continuar al siguiente paso -->
+        <div class="pt-6">
+            <button
+                type="button"
+                id="continuarPaso3"
+                onclick="generarPaginaCobro()"
+                class="bg-black text-white px-6 py-3 rounded-lg font-medium w-full hover:bg-neutral-800 hover:shadow-md transition duration-200"
+            >
+                Generar mi página de cobro
+            </button>
+        </div>
+
+        <!-- 🔗 Enlaces auxiliares -->
+        <div class="flex justify-between text-sm text-black mt-6">
+            <a href="#" onclick="volverAPaso2()" class="hover:underline">← Volver al paso anterior</a>
+            <a href="https://wa.me/5491127369492" target="_blank" class="hover:underline">¿Necesitás ayuda?</a>
+        </div>
+    </section>
+
+  <!-- 🟢 Botón flotante de WhatsApp (ayuda directa) -->
+  <a href="https://wa.me/5491127369492" class="wa-btn" target="_blank" aria-label="WhatsApp">
+    <img src="assets/WA.png" alt="WhatsApp">
+  </a>
+
+  <!-- 🎬 Animación de texto que rota automáticamente -->
+  <script>
+    const frases = [
+      "⚡ Herramientas cripto listas para usar",
+      "💸 Recibí pagos en cripto en segundos",
+      "🎯 Probalo ahora sin registrarte",
+      "🌱 Pensado para negocios reales"
+    ];
+    let idx = 0;
+    let textoActual = "";
+    let char = 0;
+    function escribir() {
+      if (char < frases[idx].length) {
+        textoActual += frases[idx][char++];
+        document.getElementById("typed-text").innerHTML = textoActual + "<span style='color:#181d24;font-weight:900'>|</span>";
+        setTimeout(escribir, 47);
+      } else {
+        setTimeout(() => {
+          textoActual = "";
+          char = 0;
+          idx = (idx + 1) % frases.length;
+          escribir();
+        }, 2100);
+      }
+    }
+    window.onload = escribir;
+  </script>
+
+  <script>
+    // 👉 Al hacer clic en “Generá tu link…”, se oculta el landing y se muestra el flujo
+    function iniciarGenerador() {
+      const landing = document.getElementById("landing");
+      const paso1 = document.getElementById("paso1");
+
+      if (landing && paso1) {
+        landing.style.display = "none";
+        paso1.style.display = "block";
+        paso1.scrollIntoView({ behavior: 'smooth' });
+        paso1.setAttribute("aria-hidden", "false");
+      } else {
+        console.error("No se encontró una de las secciones (#landing o #paso1)");
+      }
+    }
+  </script>
+
+    <script>
+        function volverAlInicio() {
+            const landing = document.getElementById("landing");
+            const paso1 = document.getElementById("paso1");
+
+            if (landing && paso1) {
+                paso1.style.display = "none";
+                paso1.setAttribute("aria-hidden", "true");
+                landing.style.display = "block";
+                landing.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+    <script>
+        function validarPaso1() {
+            const nombreInput = document.getElementById("nombreNegocio");
+            const nombre = nombreInput.value.trim();
+
+            // Limpieza previa
+            const mensajeError = document.getElementById("errorNombre");
+            if (mensajeError) mensajeError.remove();
+            nombreInput.classList.remove("border-red-500");
+
+            // Validación
+            if (nombre === "") {
+                nombreInput.classList.add("border-red-500");
+
+                const error = document.createElement("p");
+                error.id = "errorNombre";
+                error.className = "text-sm text-red-500 mt-1 mb-2";
+                error.innerText = "Este campo es obligatorio.";
+                nombreInput.parentNode.appendChild(error);
+
+                nombreInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                nombreInput.focus();
+                return;
+            }
+
+            mostrarPaso2(); // <- solo si pasa validación
+        }
+
+        // 👉 UX mejorado: limpiar error y borde rojo al escribir
+        document.getElementById("nombreNegocio").addEventListener("input", function() {
+            this.classList.remove("border-red-500");
+            const mensajeError = document.getElementById("errorNombre");
+            if (mensajeError) mensajeError.remove();
+        });
+    </script>
+
+    <script>
+        function mostrarPaso2() {
+            const paso1 = document.getElementById("paso1");
+            const paso2 = document.getElementById("paso2");
+
+            if (paso1 && paso2) {
+                paso1.style.display = "none";
+                paso1.setAttribute("aria-hidden", "true");
+
+                paso2.style.display = "block";
+                paso2.removeAttribute("aria-hidden");
+
+                paso2.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.warn("No se encontró uno de los pasos.");
+            }
+        }
+    </script>
+    <script>
+        let walletData = {
+            tipo: null,
+            direccion: null,
+            clavePrivada: null
+        };
+
+        function elegirWallet(opcion) {
+            // Visual: resetea los estilos de los botones
+            document.getElementById("btnManual").classList.remove("border-black", "bg-gray-100", "font-semibold");
+            document.getElementById("btnGenerar").classList.remove("border-black", "bg-gray-100", "font-semibold");
+
+            // Oculta el campo manual de wallet de forma suave
+            const walletManual = document.getElementById("walletManual");
+            walletManual.classList.remove("fade-in");
+            walletManual.style.display = "none";
+
+            // Reinicia los valores del formulario
+            document.getElementById("direccionManual").value = "";
+            walletData = { tipo: null, direccion: null, clavePrivada: null };
+
+            if (opcion === 'manual') {
+                document.getElementById("btnManual").classList.add("border-black", "bg-gray-100", "font-semibold");
+                // Muestra el campo manual de wallet con animación
+                walletManual.style.display = "block";
+                setTimeout(() => walletManual.classList.add("fade-in"), 10);
+                walletData.tipo = 'manual';
+            } else if (opcion === 'generar') {
+                document.getElementById("btnGenerar").classList.add("border-black", "bg-gray-100", "font-semibold");
+                abrirAvisoModal(); // ✅ Mostramos la modal de condiciones
+                walletData.tipo = 'generada';
+            }
+
+            // Deshabilita el botón hasta que se valide el campo correspondiente
+            document.getElementById("continuarPaso2").disabled = true;
+        }
+
+        // 👉 Abre la modal con condiciones y resetea el checkbox
+        function abrirAvisoModal() {
+            const modal = document.getElementById("avisoModal");
+            if (modal) {
+                modal.style.display = "flex";
+                // Removemos animación previa si existiera
+                const inner = modal.querySelector("div");
+                if (inner) {
+                    inner.classList.remove("fade-in-modal");
+                    // Forzamos reflow para reiniciar animación
+                    void inner.offsetWidth;
+                    inner.classList.add("fade-in-modal");
+                }
+            }
+            document.getElementById("acceptPrivacy").checked = false;
+            document.getElementById("btnAceptar").disabled = true;
+            document.getElementById("mensajeError").style.display = "none";
+        }
+
+        // 👉 Cierra la modal sin generar nada
+        function cerrarAvisoModal() {
+            document.getElementById("avisoModal").style.display = "none";
+            document.getElementById("acceptPrivacy").checked = false;
+            document.getElementById("btnAceptar").disabled = true;
+            document.getElementById("mensajeError").style.display = "block";
+        }
+
+        // 👉 Cuando se cargó todo el DOM
+        document.addEventListener("DOMContentLoaded", function () {
+                // ✅ Solo habilita si el usuario marca la casilla
+                document.getElementById("acceptPrivacy").onchange = function () {
+                        document.getElementById("btnAceptar").disabled = !this.checked;
+                };
+
+                // ✅ Si acepta, se cierra la modal (todavía no genera wallet)
+                document.getElementById("btnAceptar").onclick = function () {
+                        cerrarAvisoModal();
+                        // ⚠️ Más adelante se insertará la lógica real de generación
+                };
+        });
+
+        function validarDireccionManual() {
+            const input = document.getElementById("direccionManual");
+            const mensaje = document.getElementById("errorWallet");
+            mensaje.classList.add("hidden");
+            input.classList.remove("border-red-500");
+
+            // Solo deshabilita si campo está vacío (no importa si es válido)
+            if (input.value.trim() !== "") {
+                document.getElementById("continuarPaso2").disabled = false;
+            } else {
+                document.getElementById("continuarPaso2").disabled = true;
+            }
+        }
+
+
+         function continuarConWallet() {
+            const walletManualBlock = document.getElementById("walletManual");
+            const direccionInput = document.getElementById("direccionManual");
+            const direccion = direccionInput.value.trim();
+
+            // Validar solo si el campo manual está visible
+            const estaVisible = walletManualBlock && walletManualBlock.style.display !== "none";
+
+            if (estaVisible) {
+                if (!direccion.startsWith("0x") || direccion.length !== 42) {
+                    document.getElementById("errorWallet").classList.remove("hidden");
+                    direccionInput.classList.add("border-red-500");
+                    direccionInput.focus();
+                    return;
+                }
+            }
+
+            // Si la validación pasa — ir al siguiente paso
+            const paso2 = document.getElementById("paso2");
+            const paso3 = document.getElementById("paso3");
+
+            if (paso2 && paso3) {
+                paso2.style.display = "none";
+                paso2.setAttribute("aria-hidden", "true");
+
+                paso3.style.display = "block";
+                paso3.removeAttribute("aria-hidden");
+
+                paso3.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.warn("No se encontró uno de los pasos.");
+            }
+        }
+
+
+
+    </script>
+    <script>
+        function volverAPaso1() {
+            const paso1 = document.getElementById("paso1");
+            const paso2 = document.getElementById("paso2");
+
+            if (paso1 && paso2) {
+                paso2.style.display = "none";
+                paso2.setAttribute("aria-hidden", "true");
+
+                paso1.style.display = "block";
+                paso1.removeAttribute("aria-hidden");
+
+                paso1.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.warn("No se encontró uno de los pasos.");
+            }
+        }
+    </script>
+
+        <!-- 🧩 MODAL — AVISO Y CONDICIONES DE USO -->
+        <div id="avisoModal"
+             style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(40,44,51,0.13); align-items:center; justify-content:center;">
+          <div style="background:#fff; border-radius:1.3em; box-shadow:0 6px 30px rgba(0,0,0,0.14); max-width:600px; width:95vw; max-height:85vh; color:#1b1f23; font-family:'Inter', Arial, sans-serif; text-align:left; display:flex; flex-direction:column; height:100%; min-height:380px; padding:0;">
+            <div style="flex:1 1 auto; overflow-y:auto; padding:26px 32px 0 32px;">
+              <div style="font-size:1.15em;font-weight:800;color:#23272f;margin-bottom:6px;">
+                Aviso y condiciones de uso
+              </div>
+              <p style="font-size:0.95em; color:#5c5f66; margin-bottom:20px;">
+                Leé con atención antes de crear tu billetera
+              </p>
+
+              <div style="margin-bottom:16px;">
+                <span style="font-weight:700;color:#23272f;font-size:1.02em;display:flex;align-items:center;gap:6px;">
+                  <span style="font-size:1.05em;">🔐</span> Seguridad y custodia
+                </span>
+                <ul style="padding-left:20px;margin-top:10px;font-size:clamp(0.92rem, 1vw, 1.03rem);line-height:1.6;list-style-type:disc;">
+                  <li style="margin-bottom:10px;">PlataformA solo genera la billetera en tu navegador y <b style="color:#1c1f25;">no guarda tu clave privada</b>.</li>
+                  <li style="margin-bottom:10px;">Usá siempre dispositivos seguros y mantené una copia offline del archivo PDF.</li>
+                  <li style="margin-bottom:10px;">Al continuar, aceptás que sos el único responsable del manejo y seguridad de tu clave privada y fondos.</li>
+                  <li style="margin-bottom:10px;"><b style="color:#1c1f25;">PlataformA no ofrece custodia ni recuperación.</b></li>
+                  <li style="margin-bottom:10px;">Si perdés la clave privada, perdés el acceso a tus fondos. PlataformA no tiene acceso ni control sobre tus activos.</li>
+                </ul>
+              </div>
+
+              <div style="border-bottom:1.5px solid #e3e7ee;margin-bottom:16px;"></div>
+
+              <div style="margin-bottom:12px;">
+                <span style="font-weight:700;color:#23272f;font-size:1.02em;">
+                  Política de privacidad
+                </span>
+                <ul style="padding-left:20px;margin-top:8px;font-size:0.97em;line-height:1.6;list-style-type:disc;">
+                  <li style="margin-bottom:10px;">PlataformA no almacena ni accede a ninguna clave privada generada.</li>
+                  <li style="margin-bottom:10px;">Todos los datos sensibles se generan y permanecen en el dispositivo del usuario.</li>
+                  <li style="margin-bottom:10px;">Más info: 
+                    <a href="https://wa.me/5491172369492"
+                       target="_blank"
+                       style="color:#21c064; font-weight:500; text-decoration:underline; white-space:nowrap;">
+                      WhatsApp: +54&nbsp;9&nbsp;11&nbsp;2736-9492
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div style="margin-top:14px;display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" id="acceptPrivacy" style="accent-color:#23272f;">
+                <label for="acceptPrivacy" style="font-weight:600; color:#23272f; cursor:pointer; font-size:0.97em;">
+                  He leído y acepto la <b>Política de privacidad</b>
+                </label>
+                <div id="mensajeError" style="display:none;margin-top:10px;font-size:0.92em;color:#c32f27;">
+                  ⚠️ Debés aceptar las condiciones para continuar.
+                </div>
+              </div>
+            </div>
+            <div style="flex: 0 0 auto; background: #fafbfc; padding: 28px 32px 28px 32px; display: flex; gap: 12px; justify-content: center; border-top: 1.5px solid #ececec; border-radius: 0 0 1.3em 1.3em;">
+              <button id="btnAceptar"
+                      style="background: #23272f; color: #fff; border: none; border-radius: 2em; padding: 12px 0; min-width: 145px; font-size: 1.05em; font-weight: 600; cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); opacity: 0.5; pointer-events: none;"
+                      disabled>
+                Crear billetera
+              </button>
+              <button onclick="cerrarAvisoModal()"
+                      style="background: transparent; color: #555; border: 1px solid #ccc; border-radius: 2em; padding: 12px 0; min-width: 135px; font-size: 1.05em; cursor: pointer; transition: all 0.2s ease;"
+                      onmouseover="this.style.background='#f3f3f3'; this.style.borderColor='#bdbdbd';"
+                      onmouseout="this.style.background='transparent'; this.style.borderColor='#ccc';">
+                No acepto
+              </button>
+            </div>
+          </div>
+        </div>
+        <script>
+
+                // 👉 Activamos listeners después de que todo el DOM y modales estén cargados
+                window.addEventListener("load", function () {
+                        const checkbox = document.getElementById("acceptPrivacy");
+                        const btnAceptar = document.getElementById("btnAceptar");
+
+                        if (checkbox && btnAceptar) {
+                                // ✅ Habilita botón solo si se marca el checkbox
+                                checkbox.onchange = function () {
+                                        const habilitado = this.checked;
+                                        btnAceptar.disabled = !habilitado;
+
+                                        // 🔁 Estilo dinámico según estado
+                                        if (habilitado) {
+                                                btnAceptar.style.opacity = "1";
+                                                btnAceptar.style.pointerEvents = "auto";
+                                        } else {
+                                                btnAceptar.style.opacity = "0.5";
+                                                btnAceptar.style.pointerEvents = "none";
+                                        }
+                                };
+
+                                // ✅ Al aceptar, se cierra la modal (más adelante se genera la wallet)
+                                        btnAceptar.onclick = function () {
+                                                document.getElementById("avisoModal").style.display = "none";
+
+                                                // ✅ Generamos la wallet real con ethers.js
+                                                const wallet = ethers.Wallet.createRandom();
+                                                const billetera = wallet.address;
+                                                const clavePrivada = wallet.privateKey;
+
+                                                // ✅ Guardamos en el objeto global
+                                                walletData.direccion = billetera;
+                                                walletData.clavePrivada = clavePrivada;
+
+                                                // ✅ También insertamos la dirección en el campo manual y habilitamos el botón
+                                                const inputManual = document.getElementById("direccionManual");
+                                                inputManual.value = billetera;
+                                                inputManual.readOnly = true;
+                                                walletData.direccion = billetera;
+                                                document.getElementById("continuarPaso2").disabled = false;
+                                                document.getElementById("walletManual").style.display = "block";
+
+                                                // ✅ Generamos PDF real y mostramos modal de éxito
+                                                setTimeout(() => {
+                                                        generarPDF(billetera, clavePrivada);
+                                                        mostrarModalExito();
+                                                }, 600);
+                                        };
+                        }
+
+                        // ✅ Cierra la modal final
+        window.cerrarModalExito = function () {
+                document.getElementById("modalExito").style.display = "none";
+        };
+
+                        // ✅ Muestra modal de éxito y descarga PDF automáticamente
+                        function mostrarModalExito() {
+                            const modal = document.getElementById("modalExito");
+                            if (modal) {
+                                modal.style.display = "flex";
+                                const inner = modal.querySelector("div");
+                                if (inner) {
+                                    inner.classList.remove("fade-in-modal");
+                                    void inner.offsetWidth;
+                                    inner.classList.add("fade-in-modal");
+                                }
+                            }
+                        }
+
+
+
+                        // 🧾 Genera y descarga PDF real usando jsPDF
+                                                function generarPDF(billetera, clavePrivada) {
+                                                        const doc = new window.jspdf.jsPDF();
+
+                                                        doc.setFont("helvetica", "bold");
+                                                        doc.setFontSize(15);
+                                                        doc.text("TU BILLETERA CRIPTO FUE CREADA", 20, 20);
+
+                                                        let y = 34;
+                                                        doc.setFont("helvetica", "normal");
+                                                        doc.setFontSize(12);
+                                                        doc.text("Dirección pública:", 20, y);
+                                                        y += 7;
+
+                                                        doc.setFont("courier", "normal");
+                                                        doc.text(billetera, 20, y);
+                                                        y += 14;
+
+                                                        doc.setFont("helvetica", "normal");
+                                                        doc.text("Clave privada:", 20, y);
+                                                        y += 7;
+
+                                                        doc.setFont("courier", "normal");
+                                                        doc.text(clavePrivada, 20, y);
+                                                        y += 18;
+
+                                                        const bloques = [
+                                                                {
+                                                                        titulo: "¿PARA QUÉ SIRVE ESTA BILLETERA?",
+                                                                        texto: [
+                                                                                "Recibir y enviar criptomonedas en Polygon, Ethereum, Binance Smart Chain y más.",
+                                                                                "Para ver tu saldo o mover fondos, usá MetaMask o Trust Wallet."
+                                                                        ]
+                                                                },
+                                                                {
+                                                                        titulo: "CONSEJOS ESENCIALES:",
+                                                                        texto: [
+                                                                                "- Guardá este PDF en un lugar seguro (pendrive, bóveda offline, gestor de contraseñas).",
+                                                                                "- Nunca compartas tu clave privada.",
+                                                                                "- Si la perdés, nadie podrá recuperar tus fondos (ni PlataformA, ni otra persona).",
+                                                                                "- PlataformA nunca tiene acceso ni controla tus fondos o claves privadas."
+                                                                        ]
+                                                                },
+                                                                {
+                                                                        titulo: "RECOMENDACIÓN PLATAFORMA: USA POLYGON",
+                                                                        texto: [
+                                                                                "Comisiones super bajas (aprox. USD 0.03–0.05 por transferencia).",
+                                                                                "Operaciones rápidas e ideales para pagos diarios."
+                                                                        ]
+                                                                },
+                                                                {
+                                                                        titulo: "NOTA SOBRE COMISIONES:",
+                                                                        texto: [
+                                                                                "Para enviar fondos en la red Polygon, necesitás tener un poco de MATIC (la moneda de la red)",
+                                                                                "para la comisión. Si solo recibís pagos, no necesitás MATIC."
+                                                                        ]
+                                                                },
+                                                                {
+                                                                        titulo: "MÁS INFORMACIÓN Y AYUDA:",
+                                                                        texto: [
+                                                                                "Guías y soporte en plataforma.ar",
+                                                                                "WhatsApp: +54 9 11 2736-9492 / wa.me/5491127369492"
+                                                                        ]
+                                                                },
+                                                                {
+                                                                        titulo: "",
+                                                                        texto: [
+                                                                                "¡Listo! Ahora tu cripto está en tus manos.",
+                                                                                "Disfrutá tu libertad financiera.",
+                                                                                "Equipo PlataformA | plataforma.ar"
+                                                                        ]
+                                                                }
+                                                        ];
+
+                                                        doc.setFont("helvetica", "normal");
+                                                        doc.setFontSize(12);
+
+                                                        for (const bloque of bloques) {
+                                                                if (bloque.titulo) {
+                                                                        doc.setFont("helvetica", "bold");
+                                                                        doc.text(bloque.titulo, 20, y);
+                                                                        y += 7;
+                                                                }
+
+                                                                doc.setFont("helvetica", "normal");
+                                                                for (const linea of bloque.texto) {
+                                                                        doc.text(linea, 20, y, { maxWidth: 170 });
+                                                                        y += 6;
+                                                                }
+
+                                                                y += 6;
+                                                        }
+
+                                                        doc.save("Tu-Billetera-Cripto.pdf");
+                                                }
+                });
+        </script>
+
+<!-- 🟢 MODAL DE ÉXITO — igual a “¿Qué es una billetera?” -->
+<div id="modalExito"
+     class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
+     style="display: none;">
+  <div class="bg-white rounded-2xl max-w-lg w-[94vw] p-6 text-gray-800 shadow-xl overflow-y-auto max-h-[88vh] font-[Inter] animate-scalein fade-in-modal modal-card" style="padding-bottom: 16px;">
+    <!-- Encabezado -->
+    <div class="modal-header flex items-center gap-2 font-extrabold text-lg text-gray-900 mb-2">
+      <svg width="25" height="25" fill="none" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#22c55e" stroke="#18bf77" stroke-width="2"/><path d="M8 15.5l4 4 7-8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ¡Listo! Tu billetera está creada.
+    </div>
+    <div class="mb-2 text-[1em] leading-relaxed text-gray-600">
+      Tu archivo PDF se descargó con tus datos de acceso.<br>
+      <b class="text-gray-900">Guardalo bien — es tu llave única para recibir pagos.</b>
+    </div>
+    <!-- Consejos -->
+    <div class="modal-info bg-gray-100 rounded-xl border border-gray-200 px-4 py-2 mb-2 text-[0.98em]">
+      <div class="font-semibold text-gray-800 mb-1 flex items-center gap-1"><span>📌</span> Consejos útiles</div>
+      <ul class="pl-4 list-disc space-y-1 text-gray-700">
+        <li>No pierdas tu clave privada <b class="text-red-600">(¡no se puede recuperar!)</b>.</li>
+        <li>Guardala en un lugar seguro, como un pendrive o bóveda digital.</li>
+        <li>Si podés, hacé una copia de respaldo.</li>
+      </ul>
+    </div>
+    <!-- ¿Qué sigue? -->
+    <div class="modal-next bg-gray-50 rounded-xl border border-gray-200 px-4 py-2 mb-2 text-[0.97em]">
+      <div class="font-semibold text-gray-800 mb-1 flex items-center gap-1"><span>🦾</span> ¿Qué sigue?</div>
+      <div>
+        Ya podés empezar a usar tu wallet. Si tenés dudas, estamos para ayudarte.<br>
+        ¿Necesitás ayuda?
+        <a href="https://wa.me/5491127369492" target="_blank" class="text-green-600 font-semibold underline ml-1">Escribinos por WhatsApp</a>
+      </div>
+    </div>
+    <div class="modal-final text-gray-500 text-center mt-2 bg-gray-100 rounded-lg py-1 px-2 text-[0.97em]">
+      ℹ️ Te recomendamos leer <b>¿Qué es una billetera?</b> si todavía no lo hiciste.
+    </div>
+    <!-- Botón Entendido -->
+    <div class="text-center mt-4">
+      <button onclick="cerrarModalExito()"
+        class="bg-black text-white px-7 py-2 rounded-full font-semibold hover:bg-gray-800 transition text-base shadow"
+        style="min-width: 120px;">
+        Entendido
+      </button>
+    </div>
+  </div>
+</div>
+
+
+    <!-- ✅ MODAL EXPLICATIVA — ¿Qué es una billetera? -->
+    <div id="modalWalletInfo"
+         class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
+         style="display: none;">
+      <div class="bg-white rounded-2xl max-w-lg w-[90%] p-6 text-gray-800 shadow-xl overflow-y-auto max-h-[85vh] font-[Inter]">
+        <h2 class="text-xl font-bold mb-4">¿Qué es una billetera cripto?</h2>
+        <div class="space-y-4 text-[1rem] leading-relaxed">
+          <p>Es como una <strong>dirección digital</strong>, parecida a tu dirección de casa, pero en vez de recibir cartas, <strong>recibís pagos en cripto</strong>.</p>
+          <p>Una billetera tiene dos partes:</p>
+          <ul class="list-disc pl-5 space-y-2">
+            <li><strong>🔑 Dirección pública:</strong> como tu alias o CBU. Podés compartirla con confianza: es solo para recibir pagos.</li>
+            <li><strong>🔐 Clave privada:</strong> te da acceso total a tus fondos. Solo vos la tenés. Guardala en un lugar seguro y no la compartas con nadie. Como una llave: si alguien la encuentra, <strong>podría usar tu plata sin permiso. Mejor que quede solo en tus manos 😉</strong>.</li>
+          </ul>
+          <p><strong>🧬 Funciona en varias redes compatibles</strong> (como Ethereum, Polygon o Binance). La dirección es la misma, pero cada red tiene su propio saldo y comisiones. Es como tener <em>varios caminos que llevan a la misma casa, pero con monedas distintas en cada uno</em>.</p>
+          <p><strong>🧭 Usás tu billetera desde apps como Trust Wallet, MetaMask y otras.</strong></p>
+          <p><strong>📌 No depende de ninguna empresa ni aplicación.</strong> Es independiente, como vos. Las apps solo te ayudan a verla y usarla.</p>
+          <p><strong>🫱 No te preocupes:</strong> crear una billetera no te cuesta nada, no necesitás poner plata ni hacer nada raro. Es tu espacio cripto, listo para usar cuando quieras.</p>
+          <p><strong>❓¿Dudas? ¿Querés ver guías paso a paso?</strong> Escribinos por WhatsApp: <a href="https://wa.me/5491127369492" class="text-blue-600 underline" target="_blank">Contactar ahora</a>.</p>
+        </div>
+        <div class="text-center mt-6">
+          <button onclick="document.getElementById('modalWalletInfo').style.display='none'"
+                  class="bg-black text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-800 transition">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function abrirModalWalletInfo() {
+        document.getElementById('modalWalletInfo').style.display = 'flex';
+      }
+    </script>
+
+    <script>
+        function seleccionarFondo(tipo) {
+            fondoSeleccionado = tipo;
+
+            // Limpiar selección anterior
+            document.querySelectorAll('.fondo-option').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500');
+                btn.classList.remove('glow-moderna', 'glow-elegante', 'glow-tecno', 'glow-blanca');
+            });
+
+            // Aplicar efecto visual según tipo
+            const btnElegido = document.getElementById(`fondo-${tipo}`);
+            if (btnElegido) {
+                switch (tipo) {
+                    case 'moderno':
+                        btnElegido.classList.add('glow-moderna');
+                        break;
+                    case 'elegante':
+                        btnElegido.classList.add('glow-elegante');
+                        break;
+                    case 'tecnologico':
+                        btnElegido.classList.add('glow-tecno');
+                        break;
+                    case 'blanco':
+                        btnElegido.classList.add('glow-blanca');
+                        break;
+                }
+            }
+        }
+
+        function volverAPaso2() {
+            const paso2 = document.getElementById("paso2");
+            const paso3 = document.getElementById("paso3");
+
+            if (paso2 && paso3) {
+                paso3.style.display = "none";
+                paso3.setAttribute("aria-hidden", "true");
+
+                paso2.style.display = "block";
+                paso2.removeAttribute("aria-hidden");
+
+                paso2.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+
+    <script>
+
+        function generarPaginaCobro() {
+            const nombreNegocio = document.getElementById("nombreNegocio").value.trim();
+            const wallet = walletData.direccion;
+            const fondoElegido = fondoSeleccionado || "blanco";
+
+            if (!wallet) {
+                alert("No se detectó una billetera válida.");
+                return;
+            }
+
+            // ✅ Insertamos los datos en la modal
+            document.getElementById("resumenNombre").innerText = nombreNegocio || "Sin nombre";
+            document.getElementById("resumenNombreTitulo").innerText = nombreNegocio || "Tu negocio";
+            document.getElementById("resumenWallet").innerText = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+            document.getElementById("resumenFondo").innerText = capitalizarFondo(fondoElegido);
+
+            // ✅ Mostrar modal
+            abrirModalConfirmacion();
+        }
+
+        function cerrarModalExito() {
+            document.getElementById("modalExito").classList.add("hidden");
+            avanzarPaso(3); // Avanza al siguiente paso automáticamente
+        }
+
+
+    </script>
+
+        <!-- ✅ MODAL 1 — CONFIRMACIÓN PREVIA -->
+        <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden animate-fadein">
+            <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md text-center space-y-5 relative animate-scalein"
+                 style="box-shadow: 0 10px 38px 0 rgba(0,0,0,0.13), 0 2px 4px 0 rgba(0,0,0,0.04);">
+                <h2 class="text-2xl font-extrabold text-gray-900 leading-snug mb-1">
+                    🎉 ¡Lo lograste, <span id="resumenNombreTitulo" class="font-black text-gray-900">Tu negocio</span>!
+                </h2>
+                <!-- Estos spans son necesarios para que el script no dé error -->
+                <div style="display:none">
+                    <span id="resumenNombre"></span>
+                    <span id="resumenWallet"></span>
+                    <span id="resumenFondo"></span>
+                </div>
+                <p class="text-gray-600 text-[1.05rem] mb-2">
+                    Tu página de cobro ya está lista para usarse.
+                </p>
+                <div class="text-left text-gray-900 bg-gray-50 rounded-xl p-4 border border-gray-200 space-y-2 text-[1rem] shadow-sm">
+                    <p>🚀 Tu negocio ya acepta cripto. Sin bancos. Sin vueltas. Sin límites.</p>
+                    <p class="font-semibold underline underline-offset-2 mt-2">Con esta página podés:</p>
+                    <ul class="pl-5 space-y-2">
+                        <li class="flex items-center gap-2">
+                            <svg width="22" height="22" fill="none" stroke="#A6ADBA" stroke-width="2.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" stroke="#A6ADBA" stroke-width="2" fill="#fff"/><path d="M7.5 12.5l3 3 6-6" stroke="#23272f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Recibir pagos al instante
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg width="22" height="22" fill="none" stroke="#A6ADBA" stroke-width="2.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" stroke="#A6ADBA" stroke-width="2" fill="#fff"/><path d="M7.5 12.5l3 3 6-6" stroke="#23272f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Compartir tu link o imprimir tu QR
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg width="22" height="22" fill="none" stroke="#A6ADBA" stroke-width="2.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" stroke="#A6ADBA" stroke-width="2" fill="#fff"/><path d="M7.5 12.5l3 3 6-6" stroke="#23272f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Cobrar directo a tu billetera
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 pt-3">
+                    <button onclick="confirmarGeneracion()" class="bg-black text-white text-[1rem] px-5 py-2 rounded-full hover:bg-gray-800 shadow transition flex items-center justify-center gap-2">
+                        <svg width="21" height="21" fill="none" stroke="#18BF77" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.7" stroke="#18BF77" stroke-width="2" fill="#fff"/><path d="M7 12.5l3 3.2 6-6" stroke="#18BF77" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Activar mi página y empezar a cobrar
+                    </button>
+                    <button onclick="cerrarModalConfirmacion()" class="flex items-center justify-center text-[1rem] text-gray-500 hover:text-black transition gap-1">
+                        <span class="text-xl">←</span> Corregir mis datos
+                    </button>
+                </div>
+                <div class="pt-2 text-xs text-gray-400">
+                    ¿Dudas? Consultanos por <a href="https://wa.me/5491127369492" class="underline hover:text-green-600 transition">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ MODAL 2 — SUGERENCIA DESPUÉS DE ACTIVAR (MEJORADO) -->
+        <div id="modalPostConfirmacion" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden animate-fadein">
+            <div class="bg-white rounded-2xl shadow-xl p-7 w-full max-w-lg text-center space-y-5 relative font-[Inter] animate-scalein"
+                 style="box-shadow: 0 10px 38px 0 rgba(0,0,0,0.13), 0 2px 4px 0 rgba(0,0,0,0.04);">
+                <button onclick="cerrarModalPostConfirmacion()" class="absolute top-4 right-5 text-gray-400 hover:text-black text-2xl transition px-2 py-2">×</button>
+                <h2 class="text-2xl font-extrabold text-gray-900 leading-snug mb-2">
+                    ✨ ¿Querés que tu página trabaje sola por vos?
+                </h2>
+                <p class="text-gray-700 text-[1.14rem] leading-snug font-semibold mb-1">
+                    🧠 Automatizá lo importante:
+                </p>
+                <ul class="pl-6 space-y-2 text-left text-gray-900 text-[1.12rem] mb-3">
+                    <li class="flex items-center gap-2">
+                        <svg width="20" height="20" fill="none" stroke="#A6ADBA" stroke-width="2.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" stroke="#A6ADBA" stroke-width="2" fill="#fff"/><path d="M7.5 12.5l3 3 6-6" stroke="#23272f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Avisos instantáneos cuando te pagan
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg width="20" height="20" fill="none" stroke="#A6ADBA" stroke-width="2.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" stroke="#A6ADBA" stroke-width="2" fill="#fff"/><path d="M7.5 12.5l3 3 6-6" stroke="#23272f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Reportes simples y ayuda para declarar en AFIP
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg width="20" height="20" fill="none" stroke="#A6ADBA" stroke-width="2.3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" stroke="#A6ADBA" stroke-width="2" fill="#fff"/><path d="M7.5 12.5l3 3 6-6" stroke="#23272f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Diseño pro y múltiples productos en un solo link
+                    </li>
+                </ul>
+                <button class="bg-white text-black border border-gray-700 font-medium py-3 px-5 rounded-full hover:bg-gray-100 transition mt-3 text-lg shadow">
+                    🚀 Mejorar mi página ahora
+                </button>
+                <div class="text-[1.09rem] text-gray-700 pt-3 flex items-center justify-center gap-2">
+                    <span>💬 ¿Cómo fue tu experiencia?</span>
+                    <a href="#" class="underline text-black font-bold hover:text-blue-700 transition ml-1">Contanos tu feedback</a>
+                </div>
+                <p class="text-[1.05rem] text-gray-500 mt-2">
+                    📌 También podés crear más páginas, con distintos productos, fondos y nombres.
+                </p>
+            </div>
+        </div>
+        
+        <script>
+          function mostrarModalPostConfirmacion() {
+            document.getElementById("modalPostConfirmacion").classList.remove("hidden");
+          }
+
+          function cerrarModalPostConfirmacion() {
+            document.getElementById("modalPostConfirmacion").classList.add("hidden");
+          }
+        </script>
+
+  <script>
+    function capitalizarFondo(fondo) {
+        if (!fondo) return "";
+        return fondo.charAt(0).toUpperCase() + fondo.slice(1);
+    }
+
+    function abrirModalConfirmacion() {
+        const nombre = document.getElementById("nombreNegocio")?.value || "Tu negocio";
+        const wallet = walletData.direccion || "–";
+        const fondoElegidoCapitalizado = capitalizarFondo(fondoSeleccionado);
+
+        // ✅ Insertamos los datos en los elementos correspondientes de la modal
+        document.getElementById("resumenNombre").textContent = nombre;
+        document.getElementById("resumenNombreTitulo").textContent = nombre;
+        document.getElementById("resumenWallet").textContent = wallet.slice(0, 6) + "..." + wallet.slice(-4);
+        document.getElementById("resumenFondo").textContent = fondoElegidoCapitalizado;
+
+        // ✅ Mostramos la modal
+        document.getElementById("confirmModal").classList.remove("hidden");
+    }
+
+    function cerrarModalConfirmacion() {
+        document.getElementById("confirmModal").classList.add("hidden");
+    }
+
+    function confirmarGeneracion() {
+        const nombre = document.getElementById("nombreNegocio").value.trim() || "sin-nombre";
+        const wallet = walletData.direccion;
+        const fondo = fondoSeleccionado || "blanco";
+        const ofreces = document.getElementById("descripcion")?.value.trim() || "";
+        const url = `pagos.html?nombre=${encodeURIComponent(nombre)}&wallet=${encodeURIComponent(wallet)}&fondo=${encodeURIComponent(fondo)}&ofreces=${encodeURIComponent(ofreces)}`;
+        window.open(url, "_blank");
+        cerrarModalConfirmacion();
+    }
+
+  </script>
+
+        <script>
+          // Si el usuario vuelve a la pestaña, mostramos la modal de sugerencia
+          let seAbrePagos = false;
+          function confirmarGeneracion() {
+              const nombre = document.getElementById("nombreNegocio").value.trim() || "sin-nombre";
+              const wallet = walletData.direccion;
+              const fondo = fondoSeleccionado || "blanco";
+              const ofreces = document.getElementById("descripcion")?.value.trim() || "";
+              const url = `pagos.html?nombre=${encodeURIComponent(nombre)}&wallet=${encodeURIComponent(wallet)}&fondo=${encodeURIComponent(fondo)}&ofreces=${encodeURIComponent(ofreces)}`;
+              seAbrePagos = true;
+              window.open(url, "_blank");
+              cerrarModalConfirmacion();
+          }
+
+          // Detectar retorno de pestaña
+          document.addEventListener("visibilitychange", function () {
+              if (document.visibilityState === "visible" && seAbrePagos) {
+                  mostrarModalPostConfirmacion();
+                  seAbrePagos = false;
+              }
+          });
+        </script>
+
+
+</body>
+</html>

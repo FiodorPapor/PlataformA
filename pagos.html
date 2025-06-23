@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tu página de cobro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* Этот градиент заменим JS-ом */
+      background: #222;
+    }
+    .cheque {
+      background: rgba(255,255,255,0.10);
+      box-shadow:
+        0 8px 32px 0 rgba(255,255,255,0.5),
+        0 2px 20px 0 rgba(86,203,255,0.25);
+      backdrop-filter: blur(4px);
+    }
+    .cheque.clara {
+        box-shadow:
+            0 8px 44px 0 rgba(30,46,120,0.22),
+            0 2px 30px 0 rgba(146,197,253,0.17),
+            0 1.5px 5px 0 rgba(160,180,220,0.12);
+        background: rgba(255,255,255,0.25);
+    }
+    /* Кнопка "Copiar" — только scale на hover */
+    #copiarBtn:hover #copiarIcon {
+      transform: scale(1.13);
+      opacity: 1;
+      transition: all 0.18s;
+      background: transparent;
+      box-shadow: none;
+    }
+    #copiarBtn:active #copiarIcon {
+      transform: scale(0.97);
+      opacity: 1;
+      background: transparent;
+      box-shadow: none;
+    }
+    /* Tooltip "Copiado" — видим только если есть класс .show-tooltip */
+    #copiarTooltip {
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s;
+    }
+    #copiarTooltip.show-tooltip {
+      opacity: 1;
+    }
+    /* Label появляется только при hover на адрес */
+    #walletLabel {
+      opacity: 0;
+      transition: all 0.2s;
+      pointer-events: none;
+    }
+    #walletAddress:hover #walletLabel {
+      opacity: 1;
+    }
+
+    /* Белая/светлая тема */
+    .bg-tab { background-color: #fff; }
+    .bg-tab-hover { background-color: #e0f2fe; }
+    .border-tab { border-color: #e5e7eb; }
+
+    /* Тёмная тема */
+    .cheque.bg-dark .bg-tab { background-color: #232432; }
+    .cheque.bg-dark .bg-tab-hover { background-color: #2b3340; }
+    .cheque.bg-dark .border-tab { border-color: #344054; }
+
+    /* Голубая/модерн */
+    .cheque.bg-blue .bg-tab { background-color: #f0f9ff; }
+    .cheque.bg-blue .bg-tab-hover { background-color: #bae6fd; }
+    .cheque.bg-blue .border-tab { border-color: #7dd3fc; }
+
+    /* Белая/светлая тема */
+    .bg-tab { background-color: #fff; }
+    .bg-tab-hover { background-color: #e0f2fe; }
+    .border-tab { border-color: #e5e7eb; }
+
+    /* Тёмная тема */
+    .cheque.bg-dark .bg-tab { background-color: #232432; }
+    .cheque.bg-dark .bg-tab-hover { background-color: #2b3340; }
+    .cheque.bg-dark .border-tab { border-color: #344054; }
+
+    /* Голубая/модерн */
+    .cheque.bg-blue .bg-tab { background-color: #f0f9ff; }
+    .cheque.bg-blue .bg-tab-hover { background-color: #bae6fd; }
+    .cheque.bg-blue .border-tab { border-color: #7dd3fc; }
+
+    /* Боковой таб слияния с карточкой */
+    .tab-pegada {
+      margin-left: -2px;        /* Лёгкое наложение, чтобы не было зазора */
+      border-left: none !important;  /* Нет левой границы */
+      border-radius: 0 1.25rem 1.25rem 0 !important; /* Только справа скругление */
+    }
+
+    .tab-pegada {
+      border-left: none !important; /* нет левой границы */
+      border-right: 1.5px solid var(--tw-border-opacity, #e5e7eb);
+      box-shadow: 2px 4px 18px 0 rgba(30,30,40,0.09);
+    }
+
+    /* Цвета для табов по теме карточки */
+    .bg-tab { background-color: #fff; }
+    .bg-tab-hover { background-color: #e0f2fe; }
+
+    .cheque.bg-dark .bg-tab { background-color: #232432; }
+    .cheque.bg-dark .bg-tab-hover { background-color: #2b3340; }
+
+    .cheque.bg-blue .bg-tab { background-color: #f0f9ff; }
+    .cheque.bg-blue .bg-tab-hover { background-color: #bae6fd; }
+
+    /* Ярлык-Bookmark без границы, с тенью как у карточки, чуть позади */
+
+  .tab-bookmark {
+      border: none !important;
+      border-radius: 0 1.25rem 1.25rem 0 !important;
+      margin-left: -10px; /* Чуть вглубь под карточку */
+      background: inherit; /* Наследует фон карточки */
+      box-shadow:
+        0 8px 44px 0 rgba(30,46,120,0.22),
+        0 2px 30px 0 rgba(146,197,253,0.17),
+        0 1.5px 5px 0 rgba(160,180,220,0.12);
+      /* Повторяет box-shadow основной карточки */
+      z-index: 8;
+      transition: box-shadow 0.2s;
+  }
+  .cheque.bg-dark .tab-bookmark {
+      background: rgba(35,36,50,0.94);
+      box-shadow:
+        0 8px 32px 0 rgba(20,20,30,0.18),
+        0 2px 20px 0 rgba(46,163,255,0.15);
+  }
+  .cheque.bg-blue .tab-bookmark {
+      background: rgba(240,249,255,0.94);
+      box-shadow:
+        0 8px 44px 0 rgba(30,46,120,0.12),
+        0 2px 30px 0 rgba(120,200,255,0.11);
+  }
+    #usdtAceptado {
+      display: none;
+    }
+    @media print {
+      html, body {
+        width: 100vw !important;
+        height: 100vh !important;
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #pagoCard {
+        box-shadow: 0 0 0 2.5mm #e5e7eb, 0 0 24px 2px #ccc !important; /* Светлая рамка вокруг */
+        border-radius: 36px !important;
+        background: #fff !important;
+        width: 90vw !important;
+        height: 90vh !important;
+        max-width: 180mm !important;   /* Под A4 */
+        max-height: 250mm !important;  /* Под A4 */
+        min-width: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        position: relative !important;
+      }
+      #usdtAceptado {
+        display: block !important;
+        font-size: 1.9rem !important;
+        color: #111 !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        margin-bottom: 1.5rem !important;
+        margin-top: 2.2rem !important;
+      }
+      #nombreNegocio {
+        font-size: 1.5rem !important;
+        margin-bottom: 1.1rem !important;
+      }
+      #qrImg {
+        width: 210px !important;
+        height: 210px !important;
+        margin: 0.5rem auto 1.1rem auto !important;
+        display: block !important;
+      }
+      #walletBlock {
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 0 0.5rem 0 !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        justify-content: center !important;
+      }
+      #walletAddress {
+        font-size: 1.75rem !important;
+        color: #222 !important;
+        letter-spacing: 0.5px !important;
+        text-align: center !important;
+        padding: 0.5rem 0 0.6rem 0 !important;
+        margin: 0 auto !important;
+        width: 94% !important;
+        word-break: break-all !important;
+        white-space: normal !important;
+        display: block !important;
+        line-height: 1.25 !important;
+        font-weight: 600 !important;
+      }
+      .absolute.right-7.top-7,
+      #copiarBtn,
+      .group [class*="hover:"],
+      .group:hover > *:not(img),
+      .group:focus > *:not(img) {
+        display: none !important;
+      }
+      .rounded-[36px] {
+        border-radius: 36px !important;
+      }
+      #infoPago {
+        font-size: 1.18rem !important;
+        margin-top: 1.5rem !important;
+        color: #444 !important;
+      }
+    }
+
+
+  </style>
+  <script>
+    window.onload = () => {
+      const params = new URLSearchParams(window.location.search);
+      const nombre = params.get("nombre") || "Tu negocio";
+      const wallet = params.get("wallet") || "–";
+      const fondo = params.get("fondo") || "tecnologico";
+      // Градиенты
+      const gradients = {
+        'moderno': 'linear-gradient(to bottom, #e0f2fe 0%, #fff 100%)',
+        'elegante': 'linear-gradient(to bottom, #1e1e2f 0%, #2a2d40 100%)',
+        'tecnologico': 'linear-gradient(135deg, #0f172a 0%, #334155 50%, #06b6d4 100%)',
+        'blanco': '#fff'
+      };
+      document.body.style.background = gradients[fondo] || gradients['tecnologico'];
+
+      // Динамически меняем стили в зависимости от фона
+      const isClaro = fondo === "moderno" || fondo === "blanco";
+
+      // Для светлых карточек — выделяем тенью
+      const card = document.getElementById('pagoCard');
+      card.classList.remove('clara');
+      if (isClaro) {
+          card.classList.add('clara');
+      }
+
+      card.classList.remove('bg-dark','bg-blue');
+      if (fondo === "elegante") {
+          card.classList.add('bg-dark');
+      } else if (fondo === "moderno") {
+          card.classList.add('bg-blue');
+      }
+
+      // Название
+      document.getElementById("nombreNegocio").className =
+        isClaro
+          ? "text-2xl font-extrabold text-gray-800 tracking-tight mb-2"
+          : "text-2xl font-extrabold text-white tracking-tight mb-2";
+
+      // Что предлагается
+      document.getElementById("ofreces").className =
+        isClaro
+          ? "text-base opacity-90 text-gray-800"
+          : "text-base opacity-90 text-white";
+
+      // Кнопка Copiar
+      document.getElementById("copiarBtn").className =
+        isClaro
+          ? "text-blue-600 hover:text-blue-800 font-semibold text-lg ml-4 transition"
+          : "text-blue-200 hover:text-blue-100 font-semibold text-lg ml-4 transition";
+
+      // Адрес кошелька
+      document.getElementById("walletAddress").className =
+        isClaro
+          ? "break-all font-mono text-[1.18rem] text-gray-800 flex-1 select-all"
+          : "break-all font-mono text-[1.18rem] text-white flex-1 select-all";
+
+      // Инфо-подсказка
+      document.getElementById("infoPago").className =
+        isClaro
+          ? "text-xs text-gray-700 w-full pt-2 text-center"
+          : "text-xs text-white opacity-80 w-full pt-2 text-center";
+
+      document.getElementById("nombreNegocio").textContent = nombre;
+      const ofreces = params.get("ofreces") || "";
+      if (ofreces) {
+        document.getElementById("ofreces").textContent = ofreces;
+        document.getElementById("ofrecesBlock").style.display = "";
+      }
+      document.getElementById("walletAddress").textContent = wallet;
+      document.getElementById("walletAddress").setAttribute("data-wallet", wallet);
+
+      // QR
+      const qrImg = document.getElementById("qrImg");
+      qrImg.src = wallet && wallet.length > 10
+        ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(wallet)}`
+        : "";
+      // Адаптивные классы для цвета ярлыков
+      card.classList.remove('bg-dark','bg-blue');
+      if (fondo === "elegante") {
+        card.classList.add('bg-dark');
+      } else if (fondo === "moderno") {
+        card.classList.add('bg-blue');
+      }
+
+      // 🎨 Cambiar el color de los íconos de acción según el fondo de la tarjeta
+      // (Para íconos tipo PNG o SVG sin currentColor)
+      const iconCompartir = document.getElementById("iconCompartir");
+      const iconImprimir = document.getElementById("iconImprimir");
+      if (iconCompartir && iconImprimir) {
+        if (isClaro) {
+          // Fondo claro: íconos gris oscuro, muy sutil y elegante
+          iconCompartir.style.filter =
+            "invert(16%) sepia(6%) saturate(330%) hue-rotate(176deg) brightness(0.75)";
+          iconImprimir.style.filter =
+            "invert(16%) sepia(6%) saturate(330%) hue-rotate(176deg) brightness(0.75)";
+        } else {
+          // Fondo oscuro o tecnológico: íconos blancos para máxima visibilidad
+          iconCompartir.style.filter = "invert(100%)";
+          iconImprimir.style.filter = "invert(100%)";
+        }
+      }
+    };
+
+    function copiarWallet() {
+      const wallet = document.getElementById("walletAddress").getAttribute("data-wallet");
+      navigator.clipboard.writeText(wallet);
+      const tooltip = document.getElementById("copiarTooltip");
+      // Показать tooltip "Copiado"
+      tooltip.classList.add("show-tooltip");
+      setTimeout(() => {
+        tooltip.classList.remove("show-tooltip");
+      }, 1000);
+    }
+
+    // Показывать/скрывать label над адресом при наведении
+    function mostrarLabel(show) {
+      var label = document.getElementById("walletLabel");
+      if (label) label.style.opacity = show ? "1" : "0";
+    }
+
+    function mostrarLabel(show) {
+      var label = document.getElementById("walletLabel");
+      if (label) label.style.opacity = show ? "1" : "0";
+    }
+
+    // 👉 Compartir link: максимально кроссплатформенно
+    function compartirLink() {
+      const link = window.location.href;
+      // Проверяем: есть ли navigator.share и страница не открыта в iframe
+      const inIframe = window.self !== window.top;
+      if (navigator.share && !inIframe) {
+        navigator.share({
+          title: document.title,
+          url: link
+        }).catch((err) => {
+          // Если пользователь отменил — не делаем ничего.
+          // Если браузер не поддерживает — fallback.
+          // (Safari иногда бросает ошибку "NotAllowedError")
+          if (err && err.name !== 'AbortError') {
+            copiarEnPortapapeles(link);
+          }
+        });
+      } else {
+        copiarEnPortapapeles(link);
+      }
+    }
+
+    // Функция копирования без tooltip
+    function copiarEnPortapapeles(link) {
+      // Пробуем стандартный API
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(link);
+      } else {
+        // Фолбэк для старых браузеров
+        const tempInput = document.createElement("input");
+        tempInput.value = link;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+    }
+
+
+    // 👉 Tooltip visual después de copiar el link (solo en desktop)
+    function mostrarTooltipCompartir() {
+      const btn = document.getElementById("iconCompartir");
+      if (!btn) return;
+      let tooltip = document.createElement("div");
+      tooltip.textContent = "¡Link copiado!";
+      tooltip.className = "fixed left-1/2 top-3/4 -translate-x-1/2 px-4 py-2 rounded-xl shadow-lg bg-gray-900 text-white text-sm font-semibold opacity-90 z-[9999] transition-all duration-200";
+      document.body.appendChild(tooltip);
+      setTimeout(() => {
+        tooltip.style.opacity = "0";
+      }, 900);
+      setTimeout(() => {
+        document.body.removeChild(tooltip);
+      }, 1300);
+    }
+
+    function imprimirPagina() {
+      window.print();
+    }
+
+  </script>
+</head>
+<body>
+
+  <div id="pagoCard"
+    class="cheque rounded-[36px] px-8 py-10 max-w-lg w-full flex flex-col items-center justify-center space-y-6 transition-all duration-300 relative z-20">
+    <div class="flex justify-center items-center space-x-2 mb-2 z-10">
+      <div class="w-2 h-2 bg-white opacity-40 rounded-full"></div>
+      <div class="w-2 h-2 bg-white opacity-60 rounded-full"></div>
+      <div class="w-2 h-2 bg-white opacity-40 rounded-full"></div>
+    </div>
+
+    <div id="usdtAceptado">Aceptamos criptomoneda USDT</div>
+
+    <!-- Клик-иконки действий -->
+    <div class="absolute right-7 top-7 flex flex-col space-y-3 z-30">
+      <div class="relative group">
+        <button onclick="compartirLink()"
+          class="p-0 bg-transparent border-none shadow-none outline-none
+                 transition hover:scale-125 focus:scale-125 active:scale-105
+                 group"
+          style="box-shadow: none;">
+          <img src="assets/compartir.png" alt="Compartir"
+               class="w-7 h-7 opacity-70 group-hover:opacity-100 transition"
+               id="iconCompartir" />
+        </button>
+        <div class="absolute right-12 top-1/2 -translate-y-1/2
+                    px-3 py-2 rounded-xl shadow-lg pointer-events-none
+                    bg-white/95 dark:bg-gray-900/95
+                    text-gray-900 dark:text-white text-xs font-semibold
+                    opacity-0 group-hover:opacity-100 group-hover:translate-x-1
+                    transition-all duration-200 whitespace-nowrap z-50 border border-gray-200 dark:border-gray-800">
+          Compartir link de pago
+        </div>
+      </div>
+      <div class="relative group">
+        <button onclick="imprimirPagina()"
+          class="p-0 bg-transparent border-none shadow-none outline-none
+                 transition hover:scale-125 focus:scale-125 active:scale-105
+                 group"
+          style="box-shadow: none;">
+          <img src="assets/print.png" alt="Imprimir"
+               class="w-7 h-7 opacity-70 group-hover:opacity-100 transition"
+               id="iconImprimir" />
+        </button>
+        <div class="absolute right-12 top-1/2 -translate-y-1/2
+                    px-3 py-2 rounded-xl shadow-lg pointer-events-none
+                    bg-white/95 dark:bg-gray-900/95
+                    text-gray-900 dark:text-white text-xs font-semibold
+                    opacity-0 group-hover:opacity-100 group-hover:translate-x-1
+                    transition-all duration-200 whitespace-nowrap z-50 border border-gray-200 dark:border-gray-800">
+          Imprimir página
+        </div>
+      </div>
+    </div>
+
+    <h1 id="nombreNegocio" class="text-2xl font-extrabold text-white tracking-tight mb-2 z-10">Tu negocio</h1>
+    <div id="ofrecesBlock" style="display:none;" class="mb-2 z-10">
+      <span class="text-white text-base opacity-90" id="ofreces"></span>
+    </div>
+    <img id="qrImg" src="" alt="QR de pago" class="mx-auto w-48 h-48 rounded-xl shadow-lg mb-2 z-10"/>
+    <div class="w-full flex flex-col items-center justify-center z-10">
+      <div id="walletBlock"
+           class="flex bg-white/30 rounded-xl px-4 py-2 w-full max-w-full font-mono transition relative">
+        <span id="walletLabel"
+              class="absolute left-4 -top-6 text-xs text-gray-500 opacity-0 transition-all duration-200 pointer-events-none">
+          Dirección para recibir el pago
+        </span>
+        <span id="walletAddress"
+              class="break-all font-mono text-[1.18rem] flex-1 select-all leading-tight relative"
+              onmouseover="mostrarLabel(true)"
+              onmouseout="mostrarLabel(false)">
+          –
+        </span>
+        <button id="copiarBtn"
+                onclick="copiarWallet()"
+                class="ml-3 flex items-center group focus:outline-none relative"
+                title="Copiar dirección">
+          <img id="copiarIcon"
+               src="assets/copiar.png"
+               alt="Copiar"
+               class="w-10 h-10 opacity-90 transition-all duration-200 rounded-full p-1"/>
+          <span id="copiarTooltip"
+                class="absolute left-1/2 -translate-x-1/2 bottom-[-36px] px-2 py-1 rounded bg-gray-900 bg-opacity-90 text-white text-xs opacity-0 pointer-events-none select-none transition-all duration-200 z-50">
+            Copiado
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <hr class="w-2/3 border-t border-dashed border-white opacity-40 my-3 z-10"/>
+    <p id="infoPago" class="text-xs text-white opacity-80 w-full pt-2 text-center z-10">
+      Asegurate de usar la red y moneda correctas (ej: <b>USDT – Polygon</b>).
+    </p>
+  </div>
+
+</body>
+</html>
