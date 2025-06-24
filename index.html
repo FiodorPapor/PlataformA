@@ -85,48 +85,52 @@
 
     .btn-main {
       display: inline-block;
-      background: #fff;
-      color: #23272f;
+      background: #181d24;
+      color: #fff;
+      border: 1.7px solid #181d24;
       font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
-      font-weight: 400;
-      font-size: 1.08rem;
-      border: 1.7px solid #23272f;
+      font-weight: 600;
+      font-size: 1.13rem;
       padding: 0.85rem 2.5rem;
       border-radius: 1.9rem;
-      box-shadow: 0 3px 20px 0 rgba(70,70,90,0.10);
+      box-shadow: 0 5px 24px 0 rgba(30,32,40,0.10);
       margin: 1.5rem 0 1.1rem 0;
       cursor: pointer;
-      transition: all 0.16s cubic-bezier(.64,.12,.4,.95);
       outline: none;
       letter-spacing: 0.01em;
+      position: relative;
+      z-index: 1;
+      transition:
+        background 0.18s cubic-bezier(.64,.12,.4,.95),
+        color 0.18s cubic-bezier(.64,.12,.4,.95),
+        box-shadow 0.16s cubic-bezier(.35,1.4,.36,1),
+        border-color 0.18s cubic-bezier(.42,1.6,.38,1),
+        transform 0.13s cubic-bezier(.64,.12,.4,.95);
+      will-change: transform, box-shadow, background, color, border-color;
     }
 
-    .btn-acento {
-      color: #3E5F56 !important;
-      font-weight: 500;
-    }
-
-
-    .btn-main:hover {
-      background: #f3f3f3;
-      color: #181d24;
-      border-width: 2.3px;
-      box-shadow: 0 7px 28px 0 rgba(25,35,60,0.14);
-      transform: scale(1.065);
-    }
-
-    .btn-main:hover, .btn-main:focus {
-      border-color: #4DCC8A;
-      box-shadow: 0 7px 28px 0 #4DCC8A33;
-      color: #181d24;
-    }
-    .btn-main:active {
-      background: #4DCC8A;
+    .btn-main:hover,
+    .btn-main:focus {
+      background: #23272f;
       color: #fff;
-      border-color: #4DCC8A;
-      box-shadow: 0 7px 28px 0 #4DCC8A33;
-      transition: all 0.1s;
+      border-color: #23272f;
+      box-shadow: 0 13px 38px 0 rgba(30,32,40,0.16);
+      transform: scale(1.033) translateY(-2px);
     }
+
+    .btn-main:active {
+      background: #101318;
+      color: #fff;
+      border-color: #101318;
+      transform: scale(0.97) translateY(1px);
+      box-shadow: 0 2px 8px 0 rgba(30,32,40,0.08);
+    }
+
+
+
+
+
+
 
 
     .coins {
@@ -478,48 +482,59 @@
     </style>
 </head>
 <body>
-    <!-- 🎯 HERO PRINCIPAL: título, subtítulo y CTA -->
-    <div id="landing">
-        <div class="relative min-h-screen flex flex-col items-center justify-center">
-            <div class="absolute inset-0 z-0"
-                 style="background: linear-gradient(180deg, rgba(77,204,138,0.60) 0%, rgba(255,255,255,0.98) 32%, #fff 50%);"></div>
-            
-            <div class="main-wrap relative z-10">
-                <div class="logo font-black text-3xl md:text-5xl tracking-wide flex justify-center items-center">
-                    Plataform<span class="text-[#3E5F56]">A</span>
-                </div>
-                <h1 class="hero-title text-3xl md:text-5xl font-semibold text-center leading-snug mb-4 mt-2">
-                    Soluciones simples para tu crecimiento
-                </h1>
-                <div class="hero-sub text-xl md:text-2xl font-semibold text-[#7F8FA4] text-center mt-2 mb-6">
-                    Cobrá en cripto<br>
-                    Fácil. Seguro. Sin vueltas.
-                </div>
-                <div id="typed-text" class="mb-2"></div>
-                <button
-                    class="btn-main btn-acento"
-                    onclick="iniciarGenerador()"
-                >
-                    Generá tu link de pago gratis
-                </button>
-                <!-- 💸 Íconos de monedas destacadas -->
-                <div class="coins">
-                    <div class="flex flex-col items-center">
-                        <div class="coin-icon" title="BTC"><img src="assets/BTC.png" alt="BTC"></div>
-                        <span class="mt-2 text-[#7F8FA4] text-base font-semibold">Bitcoin</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="coin-icon" title="ETH"><img src="assets/ETH.png" alt="ETH"></div>
-                        <span class="mt-2 text-[#7F8FA4] text-base font-semibold">Ethereum</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="coin-icon" title="USDT"><img src="assets/USDT.png" alt="USDT"></div>
-                        <span class="mt-2 text-[#7F8FA4] text-base font-semibold">USDT</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- 🎯 HERO PRINCIPAL: Minimal en el estilo exacto de la imagen -->
+<div id="landing">
+  <div class="relative min-h-screen flex flex-col items-start justify-center" style="background: #DDF8EF;">
+    <div class="main-wrap relative z-10" style="align-items: flex-start; padding-left: 3.2rem; padding-top: 2.7rem; padding-bottom: 2.7rem;">
+      <div class="logo" style="
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 1.37rem;
+        font-weight: 500;
+        color: #181d24;
+        letter-spacing: 0.11em;
+        margin-bottom: 2.3rem;
+        margin-top: 0.5rem;
+        text-align: left;
+        opacity: 1;
+        text-shadow: none;
+        ">
+        PLATAFORMA
+      </div>
+      <h1 style="
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 3.2rem;
+        font-weight: 800;
+        color: #181d24;
+        margin-bottom: 2.5rem;
+        margin-top: 0.15rem;
+        line-height: 1.08;
+        letter-spacing: -0.01em;
+        text-align: left;
+        max-width: 670px;
+      ">
+        Cobrá en cripto<br>sin saber de cripto
+      </h1>
+      <div style="
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 1.32rem;
+        font-weight: 400;
+        color: #181d24;
+        margin-bottom: 2.6rem;
+        margin-top: -1.1rem;
+        text-align: left;
+      ">
+        Fácil. Seguro. Transparente.
+      </div>
+      <button
+        class="btn-main"
+        onclick="iniciarGenerador()"
+      >
+        Probá gratis
+      </button>
     </div>
+  </div>
+</div>
+
 
 
 
