@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600,800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -125,13 +126,6 @@
       transform: scale(0.97) translateY(1px);
       box-shadow: 0 2px 8px 0 rgba(30,32,40,0.08);
     }
-
-
-
-
-
-
-
 
     .coins {
       display: flex;
@@ -313,16 +307,6 @@
       to   { opacity: 1; transform: translateY(0);}
     }
 
-    /* Animación para mostrar elementos suavemente (por ejemplo, campos o modales) */
-    .fade-in {
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     /* Efecto fade-in suave para modales */
     .fade-in-modal {
       animation: fadeInModal 0.36s cubic-bezier(.71,.12,.4,.91);
@@ -432,40 +416,6 @@
         .wa-btn img {
             width: 70px;
             height: 70px;
-        }
-    }
-
-    /* === Десктоп/ноутбуки (примерно до 1200px) === */
-    @media (max-width: 700px) {
-        .logo {
-            font-size: 2.2rem;
-            margin-top: 1.1rem;
-            margin-bottom: 3.2rem;
-            text-align: center;
-        }
-        .hero-title {
-            font-size: 1.08rem;
-            margin-bottom: 1.18rem;
-            margin-top: 0.15rem;
-            line-height: 1.13;
-        }
-        .hero-sub {
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            margin-top: 0.55rem;
-        }
-        .coins {
-            gap: 1.8rem;
-            margin-bottom: 0.8rem;
-            margin-top: 0.55rem;
-        }
-        .coin-icon {
-            width: 4.2rem;
-            height: 4.2rem;
-        }
-        .coin-icon img {
-            width: 3.2rem;
-            height: 3.2rem;
         }
     }
 
@@ -626,13 +576,14 @@
         <div class="mb-4 text-center">
             <p class="text-sm text-gray-500 text-center mb-2">Paso 2 de 3</p>
             <h2 class="text-xl font-semibold text-center mb-6">¿Cómo querés recibir tus pagos?</h2>
-            </p>
             <p class="text-sm text-gray-600 mb-2">
                 Elegí una opción para seguir
             </p>
         </div>
 
         <!-- 🔘 Elección -->
+        <!-- El botón "Crear una nueva automáticamente" solo muestra el campo manual, que queda solo lectura.
+        La wallet se genera y se completa automáticamente solo al descargar el PDF. -->
         <div class="flex flex-col gap-4 mb-6">
             <button type="button" onclick="elegirWallet('manual')"
                 id="btnManual"
@@ -640,8 +591,7 @@
                 <strong>📲 Ya tengo billetera</strong>
                 <p class="text-sm text-gray-600">Ingresá la dirección que ya usás</p>
             </button>
-            <button type="button" onclick="elegirWallet('generar')"
-                id="btnGenerar"
+            <button type="button" onclick="abrirAvisoModal()" id="btnGenerar"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-black focus:ring-2 focus:ring-black">
                 <strong>⚙️ Crear una nueva automáticamente</strong>
                 <p class="text-sm text-gray-600">Generamos una dirección única para vos</p>
@@ -654,6 +604,7 @@
         </div>
 
         <!-- 🧾 Campo manual -->
+        <!-- El campo de dirección queda readonly cuando se va a generar automáticamente. -->
         <div id="walletManual" style="display: none;" class="mb-5">
             <label for="direccionManual" class="block text-base text-gray-700 mb-1">
                 Dirección de tu billetera
@@ -664,11 +615,14 @@
                 placeholder="Ej: 0x5F...E91A"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 oninput="validarDireccionManual()"
+                readonly
             />
             <p id="errorWallet" class="text-red-600 text-sm mt-1 hidden">
                 Ingresá una dirección válida que empiece con “0x” y tenga 42 caracteres
             </p>
         </div>
+
+
 
         <!-- 🔘 Continuar -->
         <div class="pt-3">
@@ -697,7 +651,6 @@
         <div class="mb-4 text-center">
             <p class="text-sm text-gray-500 text-center mb-2">Paso 3 de 3</p>
             <h2 class="text-xl font-semibold text-center mb-6">Elegí el fondo de tu página</h2>
-            </p>
             <p class="text-sm text-gray-600">
                 Elegí cómo querés que se vea tu página. Podés cambiarlo después.
             </p>
@@ -806,23 +759,6 @@
     window.onload = escribir;
   </script>
 
-  <script>
-    // 👉 Al hacer clic en “Generá tu link…”, se oculta el landing y se muestra el flujo
-    function iniciarGenerador() {
-      const landing = document.getElementById("landing");
-      const paso1 = document.getElementById("paso1");
-
-      if (landing && paso1) {
-        landing.style.display = "none";
-        paso1.style.display = "block";
-        paso1.scrollIntoView({ behavior: 'smooth' });
-        paso1.setAttribute("aria-hidden", "false");
-      } else {
-        console.error("No se encontró una de las secciones (#landing o #paso1)");
-      }
-    }
-  </script>
-
     <script>
         function volverAlInicio() {
             const landing = document.getElementById("landing");
@@ -833,208 +769,6 @@
                 paso1.setAttribute("aria-hidden", "true");
                 landing.style.display = "block";
                 landing.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    </script>
-    <script>
-        function validarPaso1() {
-            const nombreInput = document.getElementById("nombreNegocio");
-            const nombre = nombreInput.value.trim();
-
-            // Limpieza previa
-            const mensajeError = document.getElementById("errorNombre");
-            if (mensajeError) mensajeError.remove();
-            nombreInput.classList.remove("border-red-500");
-
-            // Validación
-            if (nombre === "") {
-                nombreInput.classList.add("border-red-500");
-
-                const error = document.createElement("p");
-                error.id = "errorNombre";
-                error.className = "text-sm text-red-500 mt-1 mb-2";
-                error.innerText = "Este campo es obligatorio.";
-                nombreInput.parentNode.appendChild(error);
-
-                nombreInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                nombreInput.focus();
-                return;
-            }
-
-            mostrarPaso2(); // <- solo si pasa validación
-        }
-
-        // 👉 UX mejorado: limpiar error y borde rojo al escribir
-        document.getElementById("nombreNegocio").addEventListener("input", function() {
-            this.classList.remove("border-red-500");
-            const mensajeError = document.getElementById("errorNombre");
-            if (mensajeError) mensajeError.remove();
-        });
-    </script>
-
-    <script>
-        function mostrarPaso2() {
-            const paso1 = document.getElementById("paso1");
-            const paso2 = document.getElementById("paso2");
-
-            if (paso1 && paso2) {
-                paso1.style.display = "none";
-                paso1.setAttribute("aria-hidden", "true");
-
-                paso2.style.display = "block";
-                paso2.removeAttribute("aria-hidden");
-
-                paso2.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                console.warn("No se encontró uno de los pasos.");
-            }
-        }
-    </script>
-    <script>
-        let walletData = {
-            tipo: null,
-            direccion: null,
-            clavePrivada: null
-        };
-
-        function elegirWallet(opcion) {
-            // Visual: resetea los estilos de los botones
-            document.getElementById("btnManual").classList.remove("border-black", "bg-gray-100", "font-semibold");
-            document.getElementById("btnGenerar").classList.remove("border-black", "bg-gray-100", "font-semibold");
-
-            // Oculta el campo manual de wallet de forma suave
-            const walletManual = document.getElementById("walletManual");
-            walletManual.classList.remove("fade-in");
-            walletManual.style.display = "none";
-
-            // Reinicia los valores del formulario
-            document.getElementById("direccionManual").value = "";
-            walletData = { tipo: null, direccion: null, clavePrivada: null };
-
-            if (opcion === 'manual') {
-                document.getElementById("btnManual").classList.add("border-black", "bg-gray-100", "font-semibold");
-                // Muestra el campo manual de wallet con animación
-                walletManual.style.display = "block";
-                setTimeout(() => walletManual.classList.add("fade-in"), 10);
-                walletData.tipo = 'manual';
-            } else if (opcion === 'generar') {
-                document.getElementById("btnGenerar").classList.add("border-black", "bg-gray-100", "font-semibold");
-                abrirAvisoModal(); // ✅ Mostramos la modal de condiciones
-                walletData.tipo = 'generada';
-            }
-
-            // Deshabilita el botón hasta que se valide el campo correspondiente
-            document.getElementById("continuarPaso2").disabled = true;
-        }
-
-        // 👉 Abre la modal con condiciones y resetea el checkbox
-        function abrirAvisoModal() {
-            const modal = document.getElementById("avisoModal");
-            if (modal) {
-                modal.style.display = "flex";
-                // Removemos animación previa si existiera
-                const inner = modal.querySelector("div");
-                if (inner) {
-                    inner.classList.remove("fade-in-modal");
-                    // Forzamos reflow para reiniciar animación
-                    void inner.offsetWidth;
-                    inner.classList.add("fade-in-modal");
-                }
-            }
-            document.getElementById("acceptPrivacy").checked = false;
-            document.getElementById("btnAceptar").disabled = true;
-            document.getElementById("mensajeError").style.display = "none";
-        }
-
-        // 👉 Cierra la modal sin generar nada
-        function cerrarAvisoModal() {
-            document.getElementById("avisoModal").style.display = "none";
-            document.getElementById("acceptPrivacy").checked = false;
-            document.getElementById("btnAceptar").disabled = true;
-            document.getElementById("mensajeError").style.display = "block";
-        }
-
-        // 👉 Cuando se cargó todo el DOM
-        document.addEventListener("DOMContentLoaded", function () {
-                // ✅ Solo habilita si el usuario marca la casilla
-                document.getElementById("acceptPrivacy").onchange = function () {
-                        document.getElementById("btnAceptar").disabled = !this.checked;
-                };
-
-                // ✅ Si acepta, se cierra la modal (todavía no genera wallet)
-                document.getElementById("btnAceptar").onclick = function () {
-                        cerrarAvisoModal();
-                        // ⚠️ Más adelante se insertará la lógica real de generación
-                };
-        });
-
-        function validarDireccionManual() {
-            const input = document.getElementById("direccionManual");
-            const mensaje = document.getElementById("errorWallet");
-            mensaje.classList.add("hidden");
-            input.classList.remove("border-red-500");
-
-            // Solo deshabilita si campo está vacío (no importa si es válido)
-            if (input.value.trim() !== "") {
-                document.getElementById("continuarPaso2").disabled = false;
-            } else {
-                document.getElementById("continuarPaso2").disabled = true;
-            }
-        }
-
-
-         function continuarConWallet() {
-            const walletManualBlock = document.getElementById("walletManual");
-            const direccionInput = document.getElementById("direccionManual");
-            const direccion = direccionInput.value.trim();
-
-            // Validar solo si el campo manual está visible
-            const estaVisible = walletManualBlock && walletManualBlock.style.display !== "none";
-
-            if (estaVisible) {
-                if (!direccion.startsWith("0x") || direccion.length !== 42) {
-                    document.getElementById("errorWallet").classList.remove("hidden");
-                    direccionInput.classList.add("border-red-500");
-                    direccionInput.focus();
-                    return;
-                }
-            }
-
-            // Si la validación pasa — ir al siguiente paso
-            const paso2 = document.getElementById("paso2");
-            const paso3 = document.getElementById("paso3");
-
-            if (paso2 && paso3) {
-                paso2.style.display = "none";
-                paso2.setAttribute("aria-hidden", "true");
-
-                paso3.style.display = "block";
-                paso3.removeAttribute("aria-hidden");
-
-                paso3.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                console.warn("No se encontró uno de los pasos.");
-            }
-        }
-
-
-
-    </script>
-    <script>
-        function volverAPaso1() {
-            const paso1 = document.getElementById("paso1");
-            const paso2 = document.getElementById("paso2");
-
-            if (paso1 && paso2) {
-                paso2.style.display = "none";
-                paso2.setAttribute("aria-hidden", "true");
-
-                paso1.style.display = "block";
-                paso1.removeAttribute("aria-hidden");
-
-                paso1.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                console.warn("No se encontró uno de los pasos.");
             }
         }
     </script>
@@ -1108,222 +842,139 @@
             </div>
           </div>
         </div>
-        <script>
 
-                // 👉 Activamos listeners después de que todo el DOM y modales estén cargados
-                window.addEventListener("load", function () {
-                        const checkbox = document.getElementById("acceptPrivacy");
-                        const btnAceptar = document.getElementById("btnAceptar");
+<script>
+    // 👉 Activamos listeners después de que todo el DOM y modales estén cargados
+    window.addEventListener("load", function () {
+        const checkbox = document.getElementById("acceptPrivacy");
+        const btnAceptar = document.getElementById("btnAceptar");
 
-                        if (checkbox && btnAceptar) {
-                                // ✅ Habilita botón solo si se marca el checkbox
-                                checkbox.onchange = function () {
-                                        const habilitado = this.checked;
-                                        btnAceptar.disabled = !habilitado;
+        if (checkbox && btnAceptar) {
+            // ✅ Habilita botón solo si se marca el checkbox
+            checkbox.onchange = function () {
+                const habilitado = this.checked;
+                btnAceptar.disabled = !habilitado;
 
-                                        // 🔁 Estilo dinámico según estado
-                                        if (habilitado) {
-                                                btnAceptar.style.opacity = "1";
-                                                btnAceptar.style.pointerEvents = "auto";
-                                        } else {
-                                                btnAceptar.style.opacity = "0.5";
-                                                btnAceptar.style.pointerEvents = "none";
-                                        }
-                                };
+                // 🔁 Estilo dinámico según estado
+                if (habilitado) {
+                    btnAceptar.style.opacity = "1";
+                    btnAceptar.style.pointerEvents = "auto";
+                } else {
+                    btnAceptar.style.opacity = "0.5";
+                    btnAceptar.style.pointerEvents = "none";
+                }
+            };
 
-                                // ✅ Al aceptar, se cierra la modal (más adelante se genera la wallet)
-                                        btnAceptar.onclick = function () {
-                                                document.getElementById("avisoModal").style.display = "none";
+            // ✅ Al aceptar, se cierra la modal de aviso y se muestra la modal de éxito
+            btnAceptar.onclick = function () {
+                document.getElementById("avisoModal").style.display = "none";
 
-                                                // ✅ Generamos la wallet real con ethers.js
-                                                const wallet = ethers.Wallet.createRandom();
-                                                const billetera = wallet.address;
-                                                const clavePrivada = wallet.privateKey;
+                // 👉 Abrimos directamente la modal de éxito (modalExito). No mostramos el campo manual aquí.
+                setTimeout(() => {
+                    mostrarModalExitoManual();
+                }, 500);
 
-                                                // ✅ Guardamos en el objeto global
-                                                walletData.direccion = billetera;
-                                                walletData.clavePrivada = clavePrivada;
-
-                                                // ✅ También insertamos la dirección en el campo manual y habilitamos el botón
-                                                const inputManual = document.getElementById("direccionManual");
-                                                inputManual.value = billetera;
-                                                inputManual.readOnly = true;
-                                                walletData.direccion = billetera;
-                                                document.getElementById("continuarPaso2").disabled = false;
-                                                document.getElementById("walletManual").style.display = "block";
-
-                                                // ✅ Generamos PDF real y mostramos modal de éxito
-                                                setTimeout(() => {
-                                                        generarPDF(billetera, clavePrivada);
-                                                        mostrarModalExito();
-                                                }, 600);
-                                        };
-                        }
-
-                        // ✅ Cierra la modal final
-        window.cerrarModalExito = function () {
-                document.getElementById("modalExito").style.display = "none";
-        };
-
-                        // ✅ Muestra modal de éxito y descarga PDF automáticamente
-                        function mostrarModalExito() {
-                            const modal = document.getElementById("modalExito");
-                            if (modal) {
-                                modal.style.display = "flex";
-                                const inner = modal.querySelector("div");
-                                if (inner) {
-                                    inner.classList.remove("fade-in-modal");
-                                    void inner.offsetWidth;
-                                    inner.classList.add("fade-in-modal");
-                                }
-                            }
-                        }
+                // 👉 La generación real de la wallet recién ocurre al descargar el PDF.
+            };
+        }
+    });
 
 
+</script>
 
-                        // 🧾 Genera y descarga PDF real usando jsPDF
-                                                function generarPDF(billetera, clavePrivada) {
-                                                        const doc = new window.jspdf.jsPDF();
 
-                                                        doc.setFont("helvetica", "bold");
-                                                        doc.setFontSize(15);
-                                                        doc.text("TU BILLETERA CRIPTO FUE CREADA", 20, 20);
-
-                                                        let y = 34;
-                                                        doc.setFont("helvetica", "normal");
-                                                        doc.setFontSize(12);
-                                                        doc.text("Dirección pública:", 20, y);
-                                                        y += 7;
-
-                                                        doc.setFont("courier", "normal");
-                                                        doc.text(billetera, 20, y);
-                                                        y += 14;
-
-                                                        doc.setFont("helvetica", "normal");
-                                                        doc.text("Clave privada:", 20, y);
-                                                        y += 7;
-
-                                                        doc.setFont("courier", "normal");
-                                                        doc.text(clavePrivada, 20, y);
-                                                        y += 18;
-
-                                                        const bloques = [
-                                                                {
-                                                                        titulo: "¿PARA QUÉ SIRVE ESTA BILLETERA?",
-                                                                        texto: [
-                                                                                "Recibir y enviar criptomonedas en Polygon, Ethereum, Binance Smart Chain y más.",
-                                                                                "Para ver tu saldo o mover fondos, usá MetaMask o Trust Wallet."
-                                                                        ]
-                                                                },
-                                                                {
-                                                                        titulo: "CONSEJOS ESENCIALES:",
-                                                                        texto: [
-                                                                                "- Guardá este PDF en un lugar seguro (pendrive, bóveda offline, gestor de contraseñas).",
-                                                                                "- Nunca compartas tu clave privada.",
-                                                                                "- Si la perdés, nadie podrá recuperar tus fondos (ni PlataformA, ni otra persona).",
-                                                                                "- PlataformA nunca tiene acceso ni controla tus fondos o claves privadas."
-                                                                        ]
-                                                                },
-                                                                {
-                                                                        titulo: "RECOMENDACIÓN PLATAFORMA: USA POLYGON",
-                                                                        texto: [
-                                                                                "Comisiones super bajas (aprox. USD 0.03–0.05 por transferencia).",
-                                                                                "Operaciones rápidas e ideales para pagos diarios."
-                                                                        ]
-                                                                },
-                                                                {
-                                                                        titulo: "NOTA SOBRE COMISIONES:",
-                                                                        texto: [
-                                                                                "Para enviar fondos en la red Polygon, necesitás tener un poco de MATIC (la moneda de la red)",
-                                                                                "para la comisión. Si solo recibís pagos, no necesitás MATIC."
-                                                                        ]
-                                                                },
-                                                                {
-                                                                        titulo: "MÁS INFORMACIÓN Y AYUDA:",
-                                                                        texto: [
-                                                                                "Guías y soporte en plataforma.ar",
-                                                                                "WhatsApp: +54 9 11 2736-9492 / wa.me/5491127369492"
-                                                                        ]
-                                                                },
-                                                                {
-                                                                        titulo: "",
-                                                                        texto: [
-                                                                                "¡Listo! Ahora tu cripto está en tus manos.",
-                                                                                "Disfrutá tu libertad financiera.",
-                                                                                "Equipo PlataformA | plataforma.ar"
-                                                                        ]
-                                                                }
-                                                        ];
-
-                                                        doc.setFont("helvetica", "normal");
-                                                        doc.setFontSize(12);
-
-                                                        for (const bloque of bloques) {
-                                                                if (bloque.titulo) {
-                                                                        doc.setFont("helvetica", "bold");
-                                                                        doc.text(bloque.titulo, 20, y);
-                                                                        y += 7;
-                                                                }
-
-                                                                doc.setFont("helvetica", "normal");
-                                                                for (const linea of bloque.texto) {
-                                                                        doc.text(linea, 20, y, { maxWidth: 170 });
-                                                                        y += 6;
-                                                                }
-
-                                                                y += 6;
-                                                        }
-
-                                                        doc.save("Tu-Billetera-Cripto.pdf");
-                                                }
-                });
-        </script>
-
-<!-- 🟢 MODAL DE ÉXITO — igual a “¿Qué es una billetera?” -->
+<!-- 🟢 MODAL DE ÉXITO — wallet generada -->
 <div id="modalExito"
-     class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
+     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
      style="display: none;">
-  <div class="bg-white rounded-2xl max-w-lg w-[94vw] p-6 text-gray-800 shadow-xl overflow-y-auto max-h-[88vh] font-[Inter] animate-scalein fade-in-modal modal-card" style="padding-bottom: 16px;">
-    <!-- Encabezado -->
-    <div class="modal-header flex items-center gap-2 font-extrabold text-lg text-gray-900 mb-2">
-      <svg width="25" height="25" fill="none" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#22c55e" stroke="#18bf77" stroke-width="2"/><path d="M8 15.5l4 4 7-8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      ¡Listo! Tu billetera está creada.
+  <div class="bg-white rounded-2xl max-w-lg w-[97vw] p-6 text-gray-800 shadow-xl overflow-y-auto max-h-[92vh] font-[Inter] relative fade-in-modal modal-card">
+    <!-- ❌ Cruz para cerrar la modal (permite salir sin descargar, por si el usuario se arrepiente) -->
+    <button onclick="cerrarModalExito()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 rounded-full p-1 focus:outline-none text-xl" title="Cerrar">
+      ×
+    </button>
+    <!-- 🏷️ Título principal de la modal (confirmación de éxito) -->
+    <div class="flex items-center gap-2 font-extrabold text-lg text-gray-900 mb-2">
+      <svg width="26" height="26" fill="none" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#22c55e" stroke="#18bf77" stroke-width="2"/><path d="M8 15.5l4 4 7-8" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ¡Tu billetera ya está lista!
     </div>
-    <div class="mb-2 text-[1em] leading-relaxed text-gray-600">
-      Tu archivo PDF se descargó con tus datos de acceso.<br>
-      <b class="text-gray-900">Guardalo bien — es tu llave única para recibir pagos.</b>
+    <!-- 📄 Aviso de que se generó el PDF con los datos -->
+    <div class="mb-1 text-[1em] leading-relaxed text-gray-700">
+      🗂️ Acabamos de generar un archivo PDF con tus datos.<br>
+      <span class="text-gray-900 font-semibold">Es tu clave única para recibir pagos en cripto.</span>
     </div>
-    <!-- Consejos -->
-    <div class="modal-info bg-gray-100 rounded-xl border border-gray-200 px-4 py-2 mb-2 text-[0.98em]">
-      <div class="font-semibold text-gray-800 mb-1 flex items-center gap-1"><span>📌</span> Consejos útiles</div>
-      <ul class="pl-4 list-disc space-y-1 text-gray-700">
-        <li>No pierdas tu clave privada <b class="text-red-600">(¡no se puede recuperar!)</b>.</li>
-        <li>Guardala en un lugar seguro, como un pendrive o bóveda digital.</li>
+    <!-- 📦 Explicación: ¿qué contiene el archivo? -->
+    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 mb-2 text-[0.98em]">
+      <div class="font-bold mb-1 text-gray-800">📄 ¿Qué contiene este archivo y para qué sirve?</div>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><b>La clave privada</b> <span class="text-gray-500">(es secreta, no la compartas con nadie)</span>.</li>
+        <li><b>La dirección de tu billetera</b> <span class="text-gray-500">(es pública, la usás para cobrar)</span>.</li>
+      </ul>
+      <div class="text-gray-700 mt-1">Este archivo te permite acceder a tu billetera y operar con ella.</div>
+      <div class="text-red-600 font-semibold mt-1 flex items-center gap-1">🔐 Si perdés este archivo, no vas a poder recuperar tu clave.</div>
+      <div class="text-gray-700 mt-1">👉 Si no lo guardás ahora, vas a tener que crear otra billetera.</div>
+    </div>
+    <!-- 👇 Consejos para guardar el archivo y botón para descargar PDF -->
+    <div class="bg-gray-100 rounded-xl border border-gray-200 px-4 py-3 mb-2 text-[0.98em]">
+      <div class="font-bold mb-1 text-gray-800">📌 ¿Qué hacer ahora?</div>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Guardá el archivo PDF en un lugar seguro: puede ser un pendrive, una carpeta protegida o una nube confiable.</li>
+        <li>No compartas la clave privada con nadie.</li>
         <li>Si podés, hacé una copia de respaldo.</li>
       </ul>
-    </div>
-    <!-- ¿Qué sigue? -->
-    <div class="modal-next bg-gray-50 rounded-xl border border-gray-200 px-4 py-2 mb-2 text-[0.97em]">
-      <div class="font-semibold text-gray-800 mb-1 flex items-center gap-1"><span>🦾</span> ¿Qué sigue?</div>
-      <div>
-        Ya podés empezar a usar tu wallet. Si tenés dudas, estamos para ayudarte.<br>
-        ¿Necesitás ayuda?
-        <a href="https://wa.me/5491127369492" target="_blank" class="text-green-600 font-semibold underline ml-1">Escribinos por WhatsApp</a>
+      <!-- ⬇️ Botón para descargar el PDF -->
+      <div class="text-center mt-2">
+        <button id="btnDescargarPDF" onclick="descargarPDFManual()"
+          class="bg-green-600 text-white px-7 py-2 rounded-full font-semibold hover:bg-green-700 transition text-base shadow mb-1"
+          style="min-width: 145px;">
+          ⬇️ Descargar PDF
+        </button>
+        <!-- 🔄 Texto dinámico para informar si ya se descargó o no -->
+        <div id="estadoDescargaPDF" class="mt-2 text-gray-700 text-sm transition-all">
+          🔒 Primero descargá tu archivo para continuar.
+        </div>
       </div>
     </div>
-    <div class="modal-final text-gray-500 text-center mt-2 bg-gray-100 rounded-lg py-1 px-2 text-[0.97em]">
-      ℹ️ Te recomendamos leer <b>¿Qué es una billetera?</b> si todavía no lo hiciste.
+    <!-- 🧭 Indica al usuario que puede continuar cuando descargue el PDF -->
+    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 mb-2 text-[0.97em]">
+      <div class="font-bold mb-1 text-gray-800">🧭 ¿Y ahora qué sigue?</div>
+      <div>
+        ¡Listo! Ya tenés tu billetera.<br>
+        Ahora podés avanzar y crear tu página para cobrar en cripto.<br>
+        <b>Vamos a guiarte paso a paso para que lo hagas sin complicaciones.</b>
+      </div>
+      <!-- ➡️ Botón para cerrar modal y seguir al siguiente paso -->
+      <div class="text-center mt-3">
+        <button id="btnEntendido" onclick="cerrarModalExito()"
+          class="bg-black text-white px-7 py-2 rounded-full font-semibold hover:bg-gray-800 transition text-base shadow"
+          style="min-width: 145px;" disabled>
+          ➡️ Continuar
+        </button>
+      </div>
     </div>
-    <!-- Botón Entendido -->
-    <div class="text-center mt-4">
-      <button onclick="cerrarModalExito()"
-        class="bg-black text-white px-7 py-2 rounded-full font-semibold hover:bg-gray-800 transition text-base shadow"
-        style="min-width: 120px;">
-        Entendido
-      </button>
+    <!-- 📞 Ayuda y link a WhatsApp -->
+    <div class="mt-2 text-center text-gray-600 text-[0.97em]">
+      <span class="block mb-1">
+        💬 ¿Tenés dudas?
+        <a href="https://wa.me/5491127369492"
+           target="_blank"
+           class="text-green-600 font-semibold underline ml-1">
+          Escribinos por WhatsApp
+        </a>
+      </span>
+      <span class="block">
+        ℹ️ <b>Recomendado:</b>
+        <!-- Al hacer clic se abre la modal informativa -->
+        <a href="#" onclick="abrirModalWalletInfo(); return false;" class="text-blue-600 hover:underline font-semibold ml-1">
+          ¿Qué es una billetera?
+        </a>
+        si es tu primera vez usando cripto.
+      </span>
     </div>
   </div>
 </div>
+
+
+
 
 
     <!-- ✅ MODAL EXPLICATIVA — ¿Qué es una billetera? -->
@@ -1353,88 +1004,6 @@
         </div>
       </div>
     </div>
-
-    <script>
-      function abrirModalWalletInfo() {
-        document.getElementById('modalWalletInfo').style.display = 'flex';
-      }
-    </script>
-
-    <script>
-        function seleccionarFondo(tipo) {
-            fondoSeleccionado = tipo;
-
-            // Limpiar selección anterior
-            document.querySelectorAll('.fondo-option').forEach(btn => {
-                btn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500');
-                btn.classList.remove('glow-moderna', 'glow-elegante', 'glow-tecno', 'glow-blanca');
-            });
-
-            // Aplicar efecto visual según tipo
-            const btnElegido = document.getElementById(`fondo-${tipo}`);
-            if (btnElegido) {
-                switch (tipo) {
-                    case 'moderno':
-                        btnElegido.classList.add('glow-moderna');
-                        break;
-                    case 'elegante':
-                        btnElegido.classList.add('glow-elegante');
-                        break;
-                    case 'tecnologico':
-                        btnElegido.classList.add('glow-tecno');
-                        break;
-                    case 'blanco':
-                        btnElegido.classList.add('glow-blanca');
-                        break;
-                }
-            }
-        }
-
-        function volverAPaso2() {
-            const paso2 = document.getElementById("paso2");
-            const paso3 = document.getElementById("paso3");
-
-            if (paso2 && paso3) {
-                paso3.style.display = "none";
-                paso3.setAttribute("aria-hidden", "true");
-
-                paso2.style.display = "block";
-                paso2.removeAttribute("aria-hidden");
-
-                paso2.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    </script>
-
-    <script>
-
-        function generarPaginaCobro() {
-            const nombreNegocio = document.getElementById("nombreNegocio").value.trim();
-            const wallet = walletData.direccion;
-            const fondoElegido = fondoSeleccionado || "blanco";
-
-            if (!wallet) {
-                alert("No se detectó una billetera válida.");
-                return;
-            }
-
-            // ✅ Insertamos los datos en la modal
-            document.getElementById("resumenNombre").innerText = nombreNegocio || "Sin nombre";
-            document.getElementById("resumenNombreTitulo").innerText = nombreNegocio || "Tu negocio";
-            document.getElementById("resumenWallet").innerText = wallet.slice(0, 6) + "..." + wallet.slice(-4);
-            document.getElementById("resumenFondo").innerText = capitalizarFondo(fondoElegido);
-
-            // ✅ Mostrar modal
-            abrirModalConfirmacion();
-        }
-
-        function cerrarModalExito() {
-            document.getElementById("modalExito").classList.add("hidden");
-            avanzarPaso(3); // Avanza al siguiente paso automáticamente
-        }
-
-
-    </script>
 
         <!-- ✅ MODAL 1 — CONFIRMACIÓN PREVIA -->
         <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden animate-fadein">
@@ -1523,40 +1092,8 @@
             </div>
         </div>
         
-        <script>
-          function mostrarModalPostConfirmacion() {
-            document.getElementById("modalPostConfirmacion").classList.remove("hidden");
-          }
-
-          function cerrarModalPostConfirmacion() {
-            document.getElementById("modalPostConfirmacion").classList.add("hidden");
-          }
-        </script>
 
   <script>
-    function capitalizarFondo(fondo) {
-        if (!fondo) return "";
-        return fondo.charAt(0).toUpperCase() + fondo.slice(1);
-    }
-
-    function abrirModalConfirmacion() {
-        const nombre = document.getElementById("nombreNegocio")?.value || "Tu negocio";
-        const wallet = walletData.direccion || "–";
-        const fondoElegidoCapitalizado = capitalizarFondo(fondoSeleccionado);
-
-        // ✅ Insertamos los datos en los elementos correspondientes de la modal
-        document.getElementById("resumenNombre").textContent = nombre;
-        document.getElementById("resumenNombreTitulo").textContent = nombre;
-        document.getElementById("resumenWallet").textContent = wallet.slice(0, 6) + "..." + wallet.slice(-4);
-        document.getElementById("resumenFondo").textContent = fondoElegidoCapitalizado;
-
-        // ✅ Mostramos la modal
-        document.getElementById("confirmModal").classList.remove("hidden");
-    }
-
-    function cerrarModalConfirmacion() {
-        document.getElementById("confirmModal").classList.add("hidden");
-    }
 
     function confirmarGeneracion() {
         const nombre = document.getElementById("nombreNegocio").value.trim() || "sin-nombre";
@@ -1592,6 +1129,10 @@
               }
           });
         </script>
+
+<script src="js/utils.js"></script>
+<script src="js/modales.js"></script>
+<script src="js/generador.js"></script>
 
 
 </body>
