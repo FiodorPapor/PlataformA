@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link href="https://fonts.googleapis.com/css?family=Inter:400,600,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,7 +14,7 @@
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
-      background: #fff;
+      background: #f9fafb;
       margin: 0;
       color: #181d24;
       /* padding-bottom: 5rem; */
@@ -94,7 +94,6 @@
       font-size: 1.13rem;
       padding: 0.85rem 2.5rem;
       border-radius: 1.9rem;
-      box-shadow: 0 5px 24px 0 rgba(30,32,40,0.10);
       margin: 1.5rem 0 1.1rem 0;
       cursor: pointer;
       outline: none;
@@ -110,21 +109,21 @@
       will-change: transform, box-shadow, background, color, border-color;
     }
 
-    .btn-main:hover,
-    .btn-main:focus {
-      background: #23272f;
-      color: #fff;
-      border-color: #23272f;
-      box-shadow: 0 13px 38px 0 rgba(30,32,40,0.16);
-      transform: scale(1.033) translateY(-2px);
-    }
-
     .btn-main:active {
       background: #101318;
       color: #fff;
       border-color: #101318;
       transform: scale(0.97) translateY(1px);
       box-shadow: 0 2px 8px 0 rgba(30,32,40,0.08);
+    }
+
+    .btn-main:hover,
+    .btn-main:focus {
+        background: #23272f;
+        color: #fff;
+        border-color: #23272f;
+        box-shadow: 0 47px 120px 0 rgba(30,32,40,0.35);
+        transform: scale(1.18) translateY(-8px);
     }
 
     .coins {
@@ -288,9 +287,16 @@
         100% { opacity: 1; }
     }
     @keyframes scalein {
-        0% { transform: scale(0.94) translateY(18px); opacity: 0; }
-        100% { transform: scale(1) translateY(0); opacity: 1; }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
+
     .animate-fadein {
         animation: fadein 0.4s cubic-bezier(.7, .07, .3, .99);
     }
@@ -377,6 +383,24 @@
         overflow: hidden;
     }
 
+    /* 🟢 Aire vertical para las cards de cada paso — así no quedan pegadas a los bordes en móvil */
+    #paso1, #paso2, #paso3 {
+        margin-top: 2.4rem;
+        margin-bottom: 2.4rem;
+        box-shadow: 0 8px 36px 0 rgba(35, 39, 47, 0.12), 0 1.5px 4px 0 rgba(0,0,0,0.07); /* Sombra pro para destacar la card */
+    }
+
+    /* 🟢 Aire, sombra y ancho aún más premium para mobile */
+    @media (max-width: 700px) {
+        #paso1, #paso2, #paso3 {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+            width: 92vw;       /* Más angosta aún */
+            max-width: 350px;  /* Máximo 350px */
+        }
+    }
+
+
     /* === Мобильная версия === */
     @media (max-width: 700px) {
         .logo {
@@ -428,6 +452,38 @@
         }
     }
 
+    .btn-glow {
+        box-shadow: 0 0 0 0 rgba(24,189,130,0.14), 0 4px 24px 0 rgba(24,189,130,0.10), 0 2px 12px 0 rgba(30,32,40,0.12);
+        animation: btnPulseGlow 2s infinite cubic-bezier(.42,.0,.58,1) alternate;
+        transition: 
+          background 0.18s cubic-bezier(.64,.12,.4,.95),
+          color 0.18s cubic-bezier(.64,.12,.4,.95),
+          box-shadow 0.26s cubic-bezier(.35,1.1,.38,1),
+          border-color 0.18s cubic-bezier(.42,1.6,.38,1),
+          transform 0.18s cubic-bezier(.64,.12,.4,.95);
+    }
+
+    .btn-glow:hover, .btn-glow:focus {
+        transform: scale(1.07) translateY(-3px);
+        box-shadow:
+            0 0 16px 2px rgba(24,189,130,0.17),        /* glow verde */
+            0 20px 48px 0 rgba(25,32,44,0.44),        
+            0 4px 32px 0 rgba(25,32,44,0.33);         
+    }
+
+    @keyframes btnPulseGlow {
+        0%   { box-shadow: 0 0 0 0 rgba(24,189,130,0.13), 0 4px 14px 0 rgba(24,189,130,0.09), 0 2px 8px 0 rgba(30,32,40,0.09);}
+        60%  { box-shadow: 0 0 0 11px rgba(24,189,130,0.09), 0 8px 26px 0 rgba(24,189,130,0.13), 0 2px 18px 0 rgba(30,32,40,0.10);}
+        100% { box-shadow: 0 0 0 0 rgba(24,189,130,0.08), 0 4px 14px 0 rgba(24,189,130,0.08), 0 2px 10px 0 rgba(30,32,40,0.08);}
+    }
+    /* 🟢 Fade-in suave para la card de cada paso (entrada más pro) */
+    @keyframes fadeInCard {
+        from { opacity: 0; transform: translateY(24px);}
+        to { opacity: 1; transform: translateY(0);}
+    }
+    .animate-fadein-card {
+        animation: fadeInCard 0.9s cubic-bezier(.37,.89,.36,1.14) both;
+    }
 
     </style>
 </head>
@@ -466,21 +522,23 @@
       </h1>
       <div style="
         font-family: 'Inter', Arial, sans-serif;
-        font-size: 1.32rem;
+        font-size: 1.23rem;
         font-weight: 400;
         color: #181d24;
         margin-bottom: 2.6rem;
-        margin-top: -1.1rem;
+        margin-top: -0.6rem;
         text-align: left;
       ">
-        Fácil. Seguro. Transparente.
+        No necesitás saber nada.<br>Es gratis.
       </div>
-      <button
-        class="btn-main"
-        onclick="iniciarGenerador()"
-      >
-        Probá gratis
-      </button>
+        <button
+          class="btn-main btn-glow"
+          onclick="iniciarGenerador()"
+        >
+          ✨ Empezá gratis
+        </button>
+
+
     </div>
   </div>
 </div>
@@ -501,45 +559,49 @@
 
   <!-- 🧩 Paso 1: El usuario completa los datos del negocio -->
     <section id="paso1" style="display: none;" aria-hidden="true"
-        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-scalein">
-        <!-- 💬 Frase emocional -->
-        <div class="mb-4">
-            <p class="text-center text-xl font-semibold text-gray-800 leading-snug">
-                Estás a 1 minuto de tener<br>tu página para cobrar en cripto 💸
-            </p>
-        </div>
+        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-fadein-card">
 
         <!-- 🔢 Paso y título -->
         <div class="mb-4 text-center">
-            <p class="text-sm text-gray-500 font-medium mb-1">Paso 1 de 3</p>
-            <h2 class="text-2xl font-bold text-gray-900">Personalizá tu página de cobro</h2>
+            <p class="text-sm text-[#1e9e75] font-semibold mb-6">Paso 1 de 3</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-6" style="white-space:nowrap;">
+              Armá tu link en 1 minuto 🚀
+            </h2>
         </div>
 
-        <form id="formNegocio" class="space-y-5">
+        <form id="formNegocio" class="space-y-7">
             <!-- 🏷️ Nombre del negocio -->
             <div>
-                <label for="nombreNegocio" class="block text-base text-gray-700 mb-1">🏷️ Nombre de tu negocio (o tu nombre) *</label>
+                <!-- Etiqueta clara y local -->
+                <label for="nombreNegocio" class="block text-base text-gray-800 mb-1">🧾 ¿Cómo se llama tu negocio o vos? *</label>
+                <!-- Campo de texto principal -->
                 <input
                     type="text"
                     id="nombreNegocio"
                     name="nombreNegocio"
                     required
                     placeholder="Ej: Panadería La Plaza"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-0 focus:border-[#1e9e75] border"
                 />
+                <!-- Mensaje de error (aparece solo si falta completar el campo) -->
+                <p id="errorNombre" class="text-yellow-700 text-xs mt-1 hidden">
+                    Por favor completá este campo para avanzar 😊
+                </p>
+
             </div>
+
 
             <!-- ✍️ ¿Qué ofrecés? (opcional) -->
             <div>
-                <label for="descripcion" class="block text-base text-gray-700 mb-1">
-                    ✍️ ¿Qué ofrecés? (opcional)
+                <label for="descripcion" class="block text-base text-gray-800 mb-1">
+                    ✍️ ¿Qué vendés o hacés? (opcional)
                 </label>
                 <input
                     type="text"
                     id="descripcion"
                     name="descripcion"
                     placeholder="Ej: servicios, productos, asesorías…"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-0 focus:border-[#1e9e75] border"
                 />
             </div>
 
@@ -547,105 +609,112 @@
             <div class="pt-3">
                 <button
                     type="button"
-                    onclick="validarPaso1()"
-                    class="bg-black text-white px-6 py-3 rounded-lg font-medium w-full hover:bg-neutral-800 hover:shadow-md transition duration-200"
+                    onclick="validarYContinuar()"
+                    class="bg-[#1e9e75] hover:bg-[#157f5f] text-white px-6 py-3 rounded-xl font-semibold w-full shadow-lg hover:shadow-xl transition duration-200 transform hover:scale-[1.035] active:scale-95"
                 >
-                    Continuar
+                    Seguir
                 </button>
             </div>
 
+
+            </div>
+
+
             <!-- 🔒 Microtexto de confianza -->
-            <p class="text-xs text-gray-500 text-center mt-4 mb-2">
-                No guardamos tus datos, solo para tu link personalizado.
+            <p class="text-xs text-gray-500 text-center mt-12 mb-2">
+                🛡️ Tus datos no se guardan.<br>Solo se usan para crear tu link único de cobro.
             </p>
 
         </form>
 
         <!-- 🔗 Enlaces auxiliares -->
         <div class="flex justify-between text-sm text-black mt-6">
-            <a href="#" onclick="volverAlInicio()" class="hover:underline">← Volver al paso anterior</a>
+            <a href="#" onclick="volverAlInicio()" class="hover:underline">← Volver al inicio</a>
             <a href="https://wa.me/5491127369492" target="_blank" class="hover:underline">¿Necesitás ayuda?</a>
         </div>
     </section>
 
   <!-- 🧩 Paso 2: El usuario elija si quiere usar su propia wallet o genere una nueva automáticamente. -->
-    <section id="paso2" style="display: none;" aria-hidden="true"
-        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-scalein">
-        <!-- 💬 Frase emocional -->
-        <!-- 💬 Encabezado simplificado -->
-        <div class="mb-4 text-center">
-            <p class="text-sm text-gray-500 text-center mb-2">Paso 2 de 3</p>
-            <h2 class="text-xl font-semibold text-center mb-6">¿Cómo querés recibir tus pagos?</h2>
-            <p class="text-sm text-gray-600 mb-2">
-                Elegí una opción para seguir
-            </p>
+    <section id="paso2" style="display: none; min-height: 450px;" aria-hidden="true"
+        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-fadein-card">
+
+        <!-- 🔢 Paso y título -->
+        <div class="mb-4 text-center flex items-center justify-center gap-1 relative">
+            <p class="text-sm text-[#1e9e75] font-semibold mb-6">Paso 2 de 3</p>
+        </div>
+        <div class="flex items-center justify-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-900" style="white-space:nowrap;">
+                ¿Cómo querés cobrar?
+            </h2>
         </div>
 
-        <!-- 🔘 Elección -->
-        <!-- El botón "Crear una nueva automáticamente" solo muestra el campo manual, que queda solo lectura.
-        La wallet se genera y se completa automáticamente solo al descargar el PDF. -->
-        <div class="flex flex-col gap-4 mb-6">
+
+        <!-- 🔘 Elección mínima -->
+        <div class="flex flex-col gap-4 mb-4">
             <button type="button" onclick="elegirWallet('manual')"
                 id="btnManual"
-                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-black focus:ring-2 focus:ring-black">
-                <strong>📲 Ya tengo billetera</strong>
-                <p class="text-sm text-gray-600">Ingresá la dirección que ya usás</p>
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-[#1e9e75] focus:ring-2 focus:ring-[#1e9e75] transition font-semibold">
+                📲 Ya tengo billetera
             </button>
             <button type="button" onclick="abrirAvisoModal()" id="btnGenerar"
-                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-black focus:ring-2 focus:ring-black">
-                <strong>⚙️ Crear una nueva automáticamente</strong>
-                <p class="text-sm text-gray-600">Generamos una dirección única para vos</p>
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-left hover:border-[#1e9e75] focus:ring-2 focus:ring-[#1e9e75] transition font-semibold">
+                ⚙️ Crear billetera nueva
             </button>
-            <p class="text-sm text-gray-500 text-center mt-1">
-                <a href="#" onclick="abrirModalWalletInfo()" class="text-blue-600 hover:underline">
-                    ¿Qué es una billetera?
-                </a>
-            </p>
+            <a href="#" onclick="abrirModalWalletInfo()"
+                class="inline-flex items-center justify-center text-gray-700 text-sm mt-2 mb-2 font-normal hover:underline rounded-xl px-1 py-1 transition"
+                style="gap: 5px;">
+                <span style="font-size:1.15em; color:#6b7280;">ℹ️</span>
+                ¿Qué es una billetera?
+            </a>
+
         </div>
 
+
+
         <!-- 🧾 Campo manual -->
-        <!-- El campo de dirección queda readonly cuando se va a generar automáticamente. -->
-        <div id="walletManual" style="display: none;" class="mb-5">
-            <label for="direccionManual" class="block text-base text-gray-700 mb-1">
+        <div id="walletManual" style="display: none;" class="mb-4">
+            <label for="direccionManual" class="block text-base text-gray-800 mb-1 mt-3">
                 Dirección de tu billetera
             </label>
             <input
                 type="text"
                 id="direccionManual"
                 placeholder="Ej: 0x5F...E91A"
-                class="w-full px-4 py-2 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 shadow-sm focus:outline-none focus:ring-0 focus:border-[#1e9e75] border"
                 oninput="validarDireccionManual()"
-                readonly
             />
-            <p id="errorWallet" class="text-red-600 text-sm mt-1 hidden">
+            <p id="errorWallet" class="text-yellow-700 text-xs mt-1 hidden">
                 Ingresá una dirección válida que empiece con “0x” y tenga 42 caracteres
             </p>
         </div>
 
-
-
-        <!-- 🔘 Continuar -->
-        <div class="pt-3">
+        <!-- 🔘 Botón principal -->
+        <div class="pt-2 mb-4">
             <button
                 type="button"
                 id="continuarPaso2"
                 onclick="continuarConWallet()"
-                class="bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition w-full"
-                disabled
+                class="bg-[#1e9e75] hover:bg-[#157f5f] text-white px-6 py-3 rounded-xl font-semibold w-full shadow-lg hover:shadow-xl transition duration-200 transform hover:scale-[1.035] active:scale-95"
             >
-                Continuar
+                Seguir
             </button>
         </div>
-        <!-- 🔗 Enlaces auxiliares -->
+
         <div class="flex justify-between text-sm text-black mt-6">
-            <a href="#" onclick="volverAPaso1()" class="hover:underline">← Volver al paso anterior</a>
+            <a href="#" onclick="volverAPaso1()" class="hover:underline">← Volver al paso 1</a>
             <a href="https://wa.me/5491127369492" target="_blank" class="hover:underline">¿Necesitás ayuda?</a>
         </div>
+
+
+
+
     </section>
+
+
 
     <!-- 🧩 Paso 3: Fondo visual de la página de cobro -->
     <section id="paso3" style="display: none;" aria-hidden="true"
-        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-scalein">
+        class="bg-white px-6 py-6 rounded-2xl shadow-lg max-w-xl mx-auto mt-12 mb-12 transition-opacity duration-500 ease-in-out animate-fadein-card"
         
         <!-- 🖼️ Título -->
         <div class="mb-4 text-center">
@@ -721,7 +790,7 @@
 
         <!-- 🔗 Enlaces auxiliares -->
         <div class="flex justify-between text-sm text-black mt-6">
-            <a href="#" onclick="volverAPaso2()" class="hover:underline">← Volver al paso anterior</a>
+            <a href="#" onclick="volverAPaso2()" class="hover:underline">← Volver al paso 2</a>
             <a href="https://wa.me/5491127369492" target="_blank" class="hover:underline">¿Necesitás ayuda?</a>
         </div>
     </section>

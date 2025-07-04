@@ -40,39 +40,31 @@ function mostrarPaso2() {
     }
 }
 
+// Valida el primer paso antes de avanzar
+// Valida el primer paso antes de avanzar (solo para el campo obligatorio)
 function validarPaso1() {
     const nombreInput = document.getElementById("nombreNegocio");
+    const error = document.getElementById("errorNombre");
     const nombre = nombreInput.value.trim();
 
-    // Limpieza previa
-    const mensajeError = document.getElementById("errorNombre");
-    if (mensajeError) mensajeError.remove();
-    nombreInput.classList.remove("border-red-500");
+    // Resetea los estilos de error antes de chequear
+    nombreInput.classList.remove("border-yellow-400", "bg-yellow-50");
+    error.classList.add("hidden");
 
-    // Validación
+    // Si el campo está vacío, muestra el error y la marca amarilla
     if (nombre === "") {
-        nombreInput.classList.add("border-red-500");
-
-        const error = document.createElement("p");
-        error.id = "errorNombre";
-        error.className = "text-sm text-red-500 mt-1 mb-2";
-        error.innerText = "Este campo es obligatorio.";
-        nombreInput.parentNode.appendChild(error);
-
+        nombreInput.classList.add("border-yellow-400", "bg-yellow-50");
+        error.classList.remove("hidden");
         nombreInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         nombreInput.focus();
         return;
     }
 
-    mostrarPaso2(); // <- solo si pasa validación
+    // Si está todo ok, avanza al siguiente paso
+    mostrarPaso2();
 }
 
-// UX mejorado: limpiar error y borde rojo al escribir
-document.getElementById("nombreNegocio").addEventListener("input", function() {
-    this.classList.remove("border-red-500");
-    const mensajeError = document.getElementById("errorNombre");
-    if (mensajeError) mensajeError.remove();
-});
+
 
 function elegirWallet(opcion) {
     // Visual: resetea los estilos de los botones
@@ -100,57 +92,58 @@ function elegirWallet(opcion) {
         walletData.tipo = 'generada';
     }
 
-    // Deshabilita el botón hasta que se valide el campo correspondiente
-    document.getElementById("continuarPaso2").disabled = true;
 }
 
-// 👉 Mostrar el campo manual y preparar el flujo para crear la wallet solo al descargar el PDF
 function mostrarCampoGenerarWallet() {
     document.getElementById("walletManual").style.display = "block";
     document.getElementById("direccionManual").value = "";
     document.getElementById("direccionManual").readOnly = true; // Siempre solo lectura, porque se va a generar
-    document.getElementById("continuarPaso2").disabled = true;
     // No generamos la wallet todavía
 }
+
 
 function validarDireccionManual() {
     const input = document.getElementById("direccionManual");
     const mensaje = document.getElementById("errorWallet");
+    // Oculta el mensaje de error y resetea el estilo amarillo
     mensaje.classList.add("hidden");
-    input.classList.remove("border-red-500");
-
-    // Solo deshabilita si campo está vacío (no importa si es válido)
-    if (input.value.trim() !== "") {
-        document.getElementById("continuarPaso2").disabled = false;
-    } else {
-        document.getElementById("continuarPaso2").disabled = true;
-    }
+    input.classList.remove("border-yellow-400", "bg-yellow-50");
 }
+
 
 function continuarConWallet() {
     const walletManualBlock = document.getElementById("walletManual");
     const direccionInput = document.getElementById("direccionManual");
+    const error = document.getElementById("errorWallet");
     const direccion = direccionInput.value.trim();
 
     const estaVisible = walletManualBlock && walletManualBlock.style.display !== "none";
     const direccionPareceValida = direccion.startsWith("0x") && direccion.length === 42;
 
-    // Si el usuario eligió "Ya tengo billetera" o pegó directamente una dirección válida
-    if (walletData.tipo === "manual" || estaVisible || direccionPareceValida) {
-        if (!direccionPareceValida) {
-            document.getElementById("errorWallet").classList.remove("hidden");
-            direccionInput.classList.add("border-red-500");
+    // Siempre resetea antes de validar (como en Paso 1)
+    direccionInput.classList.remove("border-yellow-400", "bg-yellow-50");
+    error.classList.add("hidden");
+
+    if (estaVisible) {
+        if (direccion === "") {
+            direccionInput.classList.add("border-yellow-400", "bg-yellow-50");
+            error.classList.remove("hidden");
             direccionInput.focus();
+            walletData.direccion = null;
             return;
         }
-
-        // Guardamos la dirección manualmente
+        if (!direccionPareceValida) {
+            direccionInput.classList.add("border-yellow-400", "bg-yellow-50");
+            error.classList.remove("hidden");
+            direccionInput.focus();
+            walletData.direccion = null;
+            return;
+        }
         walletData.direccion = direccion;
     }
 
-    // Validar que tengamos una wallet
+    // ⛔️ Не переходим если нет валидного адреса
     if (!walletData.direccion || !walletData.direccion.startsWith("0x") || walletData.direccion.length !== 42) {
-        alert("❌ No se detectó una billetera válida.");
         return;
     }
 
@@ -417,4 +410,40 @@ async function descargarPDFManual() {
         btn.classList.remove("opacity-50", "cursor-not-allowed");
     }
 }
+// Validación y avance
+function validarFormulario() {
+    const nombreInput = document.getElementById("nombreNegocio");
+    const error = document.getElementById("errorNombre");
+    // Resetea los estilos de error antes de chequear
+    nombreInput.classList.remove("border-yellow-400", "bg-yellow-50");
+    error.classList.add("hidden");
+    if (nombreInput.value.trim() === "") {
+        nombreInput.classList.add("border-yellow-400", "bg-yellow-50");
+        error.classList.remove("hidden");
+        nombreInput.focus();
+        return false;
+    }
+    return true;
+}
 
+function validarYContinuar() {
+    if (validarFormulario()) {
+        mostrarPaso2();
+    }
+}
+
+// UX mejorado: limpia el error solo cuando realmente hay texto
+document.addEventListener('DOMContentLoaded', () => {
+    const nombreInput = document.getElementById("nombreNegocio");
+    const error = document.getElementById("errorNombre");
+    if (nombreInput && error) {
+        nombreInput.addEventListener('input', () => {
+            // Saca el error solo si el campo deja de estar vacío
+            if (nombreInput.value.trim() !== "") {
+                nombreInput.classList.remove('border-yellow-400', 'bg-yellow-50');
+                error.classList.add('hidden');
+            }
+        });
+        // Eliminado el listener de focus, no es necesario
+    }
+});
